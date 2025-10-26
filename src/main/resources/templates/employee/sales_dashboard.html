@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Staff Dashboard - Computer Shop</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --border-radius: 8px;
+            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background-color: var(--gray-50);
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1.5rem 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-title p {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .tab-list {
+            display: flex;
+            border-bottom: 2px solid var(--gray-200);
+            padding: 0;
+            list-style: none;
+        }
+
+        .tab-button {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--gray-600);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-button:hover {
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .card-description {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .stat-label {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--gray-900);
+        }
+
+        .stat-value.success {
+            color: var(--success-color);
+        }
+
+        .stat-value.danger {
+            color: var(--danger-color);
+        }
+
+        .stat-value.warning {
+            color: var(--warning-color);
+        }
+
+        /* Filters */
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .table td {
+            font-size: 0.875rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content.large {
+            max-width: 1200px;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            color: var(--gray-700);
+            background: var(--gray-100);
+            border-radius: 50%;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* Ticket Card */
+        .ticket-card {
+            padding: 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 1rem;
+        }
+
+        .ticket-card:hover {
+            box-shadow: var(--box-shadow);
+            border-color: var(--primary-color);
+        }
+
+        .ticket-card.selected {
+            border-color: var(--primary-color);
+            background: #eff6ff;
+        }
+
+        /* Messages */
+        .messages-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+        }
+
+        .message.customer {
+            background: white;
+            border: 1px solid var(--gray-200);
+            margin-right: 3rem;
+        }
+
+        .message.staff {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            margin-left: 3rem;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .message-sender {
+            font-weight: 600;
+        }
+
+        .message-time {
+            color: var(--gray-500);
+            font-size: 0.75rem;
+        }
+
+        /* Toast */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            color: white;
+            box-shadow: var(--box-shadow-lg);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            background: var(--success-color);
+        }
+
+        .toast-error {
+            background: var(--danger-color);
+        }
+
+        .toast-info {
+            background: var(--primary-color);
+        }
+
+        /* Utility Classes */
+        .flex {
+            display: flex;
+        }
+
+        .gap-1 {
+            gap: 0.5rem;
+        }
+
+        .gap-2 {
+            gap: 1rem;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--gray-500);
+        }
+
+        .mb-1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .mt-2 {
+            margin-top: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .font-mono {
+            font-family: 'Courier New', monospace;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: scroll;
+            }
+
+            .message.customer,
+            .message.staff {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<div class="header">
+    <div class="header-content">
+        <div class="header-title">
+            <h1>🖥️ Sales Staff Dashboard</h1>
+            <p>Manage orders, payments, and customer support</p>
+        </div>
+        <div>
+            <span class="badge badge-primary">👨‍💼 Sales Staff</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Tabs -->
+    <div class="tabs">
+        <ul class="tab-list">
+            <li>
+                <button class="tab-button active" data-tab="orders" onclick="switchTab('orders')">
+                    📦 Orders Management
+                </button>
+            </li>
+            <li>
+                <button class="tab-button" data-tab="support" onclick="switchTab('support')">
+                    💬 Support Tickets
+                </button>
+            </li>
+        </ul>
+
+        <!-- Orders Tab -->
+        <div id="ordersTab" class="tab-content active">
+            <div style="padding: 2rem;">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Orders</div>
+                        <div class="stat-value" id="totalOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pending Orders</div>
+                        <div class="stat-value warning" id="pendingOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Unpaid Orders</div>
+                        <div class="stat-value danger" id="unpaidOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Revenue Today</div>
+                        <div class="stat-value success" id="revenueToday">$0.00</div>
+                    </div>
+                </div>
+
+                <!-- Filters Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Filter Orders</div>
+                    </div>
+                    <div class="filters">
+                        <div class="form-group">
+                            <label class="form-label">Search</label>
+                            <input type="text" id="searchInput" class="form-input" placeholder="Order ID, customer name, email...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Order Status</label>
+                            <select id="statusFilter" class="form-select">
+                                <option value="all">All Statuses</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="CONFIRMED">Confirmed</option>
+                                <option value="PROCESSING">Processing</option>
+                                <option value="READY">Ready</option>
+                                <option value="COMPLETED">Completed</option>
+                                <option value="CANCELLED">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Payment Status</label>
+                            <select id="paymentFilter" class="form-select">
+                                <option value="all">All Payment Statuses</option>
+                                <option value="UNPAID">Unpaid</option>
+                                <option value="PARTIAL">Partial</option>
+                                <option value="PAID">Paid</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Customer Orders (<span id="ordersCount">0</span>)</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">Loading orders...</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Tab -->
+        <div id="supportTab" class="tab-content">
+            <div style="padding: 2rem;">
+                <div class="grid grid-2">
+                    <!-- Tickets List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Support Tickets (<span id="ticketsCount">0</span>)</div>
+                            <div class="card-description">Customer support requests</div>
+                        </div>
+                        <div id="ticketsList"></div>
+                    </div>
+
+                    <!-- Ticket Details -->
+                    <div class="card" id="ticketDetailsCard">
+                        <div class="card-header">
+                            <div class="card-title" id="ticketDetailsTitle">Select a Ticket</div>
+                        </div>
+                        <div id="ticketDetailsBody">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">💬</div>
+                                <p>Select a ticket to view details and reply</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Process Payment</div>
+            <button class="close-modal" onclick="closeModal('paymentModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Customer</label>
+                <div id="paymentCustomerName" class="font-medium"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Order Total</label>
+                <div id="paymentOrderTotal" style="font-size: 1.5rem; font-weight: bold; color: var(--success-color);"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Payment Amount *</label>
+                <input type="number" id="paymentAmount" class="form-input" step="0.01" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Payment Method *</label>
+                <select id="paymentMethod" class="form-select">
+                    <option value="CASH">💵 Cash</option>
+                    <option value="CARD">💳 Card</option>
+                    <option value="BANK_TRANSFER">🏦 Bank Transfer</option>
+                    <option value="CHECK">📝 Check</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('paymentModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="processPayment()">Record Payment</button>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div id="orderModal" class="modal">
+    <div class="modal-content large">
+        <div class="modal-header">
+            <div class="modal-title" id="orderModalTitle">Order Details</div>
+            <button class="close-modal" onclick="closeModal('orderModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="orderModalBody"></div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<script>
+    // ==================== CONFIGURATION ====================
+    const API_BASE_URL = 'http://localhost:8080/api'; // Update with your Java backend URL
+
+    // ==================== STATE ====================
+    let orders = [];
+    let tickets = [];
+    let selectedOrder = null;
+    let selectedTicket = null;
+    const currentStaffId = 1; // Replace with actual logged-in staff ID
+
+    // ==================== MOCK DATA ====================
+    const MOCK_ORDERS = [
+        {
+            order_id: 1001,
+            customer_id: 5,
+            customer_name: "John Smith",
+            customer_email: "john.smith@email.com",
+            order_date: "2025-10-20T10:30:00",
+            status: "PENDING",
+            payment_status: "UNPAID",
+            total: 2279.97,
+            details: [
+                { order_detail_id: 1, part_id: 1, part_name: "AMD Ryzen 9 7950X", part_brand: "AMD", quantity: 1, price: 549.99 },
+                { order_detail_id: 2, part_id: 3, part_name: "NVIDIA RTX 4090", part_brand: "NVIDIA", quantity: 1, price: 1599.99 },
+                { order_detail_id: 3, part_id: 5, part_name: "Corsair Vengeance DDR5 32GB", part_brand: "Corsair", quantity: 1, price: 129.99 }
+            ]
+        },
+        {
+            order_id: 1002,
+            customer_id: 6,
+            customer_name: "Sarah Johnson",
+            customer_email: "sarah.j@email.com",
+            order_date: "2025-10-20T14:15:00",
+            status: "CONFIRMED",
+            payment_status: "PAID",
+            total: 899.98,
+            details: [
+                { order_detail_id: 4, part_id: 2, part_name: "Intel Core i9-13900K", part_brand: "Intel", quantity: 1, price: 589.99 },
+                { order_detail_id: 5, part_id: 6, part_name: "Samsung 990 Pro 2TB", part_brand: "Samsung", quantity: 1, price: 189.99 },
+                { order_detail_id: 6, part_id: 5, part_name: "Corsair Vengeance DDR5 32GB", part_brand: "Corsair", quantity: 1, price: 129.99 }
+            ]
+        },
+        {
+            order_id: 1003,
+            customer_id: 7,
+            customer_name: "Mike Davis",
+            customer_email: "mike.d@email.com",
+            order_date: "2025-10-21T09:00:00",
+            status: "PROCESSING",
+            payment_status: "PARTIAL",
+            total: 1599.99,
+            details: [
+                { order_detail_id: 7, part_id: 3, part_name: "NVIDIA RTX 4090", part_brand: "NVIDIA", quantity: 1, price: 1599.99 }
+            ]
+        },
+        {
+            order_id: 1004,
+            customer_id: 8,
+            customer_name: "Emily Wilson",
+            customer_email: "emily.w@email.com",
+            order_date: "2025-10-21T11:30:00",
+            status: "READY",
+            payment_status: "PAID",
+            total: 779.98,
+            details: [
+                { order_detail_id: 8, part_id: 2, part_name: "Intel Core i9-13900K", part_brand: "Intel", quantity: 1, price: 589.99 },
+                { order_detail_id: 9, part_id: 6, part_name: "Samsung 990 Pro 2TB", part_brand: "Samsung", quantity: 1, price: 189.99 }
+            ]
+        }
+    ];
+
+    const MOCK_TICKETS = [
+        {
+            ticket_id: 101,
+            customer_id: 5,
+            customer_name: "John Smith",
+            subject: "Question about my order #1001",
+            category: "Order Inquiry",
+            priority: "MEDIUM",
+            status: "OPEN",
+            created_at: "2025-10-20T11:00:00",
+            messages: [
+                {
+                    message_id: 1,
+                    sender_type: "CUSTOMER",
+                    sender_name: "John Smith",
+                    message: "When will my order be ready for pickup?",
+                    created_at: "2025-10-20T11:00:00"
+                }
+            ]
+        },
+        {
+            ticket_id: 102,
+            customer_id: 6,
+            customer_name: "Sarah Johnson",
+            subject: "Compatibility question",
+            category: "Product Question",
+            priority: "LOW",
+            status: "RESOLVED",
+            created_at: "2025-10-19T15:30:00",
+            messages: [
+                {
+                    message_id: 2,
+                    sender_type: "CUSTOMER",
+                    sender_name: "Sarah Johnson",
+                    message: "Will the Intel i9 work with DDR4 RAM?",
+                    created_at: "2025-10-19T15:30:00"
+                },
+                {
+                    message_id: 3,
+                    sender_type: "STAFF",
+                    sender_name: "Sales Staff",
+                    message: "The Intel i9-13900K requires DDR5 RAM. However, some motherboards support DDR4. Please check your motherboard specifications.",
+                    created_at: "2025-10-19T16:00:00"
+                },
+                {
+                    message_id: 4,
+                    sender_type: "CUSTOMER",
+                    sender_name: "Sarah Johnson",
+                    message: "Thank you! That's very helpful.",
+                    created_at: "2025-10-19T16:15:00"
+                }
+            ]
+        }
+    ];
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function formatCurrency(amount) {
+        return `$${parseFloat(amount).toFixed(2)}`;
+    }
+
+    function formatDate(dateString) {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+
+    function formatDateTime(dateString) {
+        return new Date(dateString).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+
+        const container = document.getElementById('toastContainer');
+        container.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function getBadgeClass(status) {
+        const map = {
+            'PENDING': 'badge-warning',
+            'CONFIRMED': 'badge-primary',
+            'PROCESSING': 'badge-primary',
+            'READY': 'badge-primary',
+            'COMPLETED': 'badge-success',
+            'CANCELLED': 'badge-danger',
+            'UNPAID': 'badge-danger',
+            'PARTIAL': 'badge-warning',
+            'PAID': 'badge-success',
+            'OPEN': 'badge-warning',
+            'IN_PROGRESS': 'badge-primary',
+            'RESOLVED': 'badge-success',
+            'CLOSED': 'badge-secondary'
+        };
+        return map[status] || 'badge-secondary';
+    }
+
+    // ==================== TAB MANAGEMENT ====================
+    function switchTab(tabName) {
+        // Update tab buttons
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tab === tabName) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(tabName + 'Tab').classList.add('active');
+
+        // Load data for the active tab
+        if (tabName === 'orders') {
+            loadOrders();
+        } else if (tabName === 'support') {
+            loadTickets();
+        }
+    }
+
+    // ==================== ORDERS ====================
+    async function loadOrders() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/sales/orders`);
+            if (!response.ok) throw new Error(`API responded with ${response.status}`);
+            const data = await response.json();
+            // Basic validation: expect an array
+            if (Array.isArray(data) && data.length > 0) {
+                orders = data;
+            } else if (Array.isArray(data) && data.length === 0) {
+                orders = [];
+            } else {
+                // Unexpected shape -> fallback
+                console.warn('Unexpected orders payload shape, falling back to mock data', data);
+                orders = MOCK_ORDERS;
+            }
+        } catch (err) {
+            console.error('Failed to load orders from API', err);
+            showToast('Could not load orders from server; showing local data', 'error');
+            orders = MOCK_ORDERS;
+        }
+
+        displayOrders();
+        updateStats();
+    }
+
+    function displayOrders() {
+        const tbody = document.getElementById('ordersTableBody');
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const paymentFilter = document.getElementById('paymentFilter').value;
+
+        let filtered = orders.filter(order => {
+            const matchesSearch = searchQuery === '' ||
+                order.order_id.toString().includes(searchQuery) ||
+                order.customer_name.toLowerCase().includes(searchQuery) ||
+                order.customer_email.toLowerCase().includes(searchQuery);
+            const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+            const matchesPayment = paymentFilter === 'all' || order.payment_status === paymentFilter;
+            return matchesSearch && matchesStatus && matchesPayment;
+        });
+
+        document.getElementById('ordersCount').textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No orders found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(order => `
+        <tr>
+          <td class="font-mono">#${order.order_id}</td>
+          <td>
+            <div class="font-medium">${order.customer_name}</div>
+            <div class="text-muted" style="font-size: 0.75rem;">${order.customer_email}</div>
+          </td>
+          <td>${formatDate(order.order_date)}</td>
+          <td>${order.details.length} items</td>
+          <td class="font-semibold">${formatCurrency(order.total)}</td>
+          <td><span class="badge ${getBadgeClass(order.status)}">${order.status}</span></td>
+          <td><span class="badge ${getBadgeClass(order.payment_status)}">${order.payment_status}</span></td>
+          <td>
+            <div class="flex gap-1">
+              <button class="btn btn-outline btn-sm" onclick="viewOrderDetails(${order.order_id})">View</button>
+              <button class="btn btn-primary btn-sm" onclick="openPaymentModal(${order.order_id})"
+                      ${order.payment_status === 'PAID' ? 'disabled' : ''}>
+                💳 Pay
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function updateStats() {
+        document.getElementById('totalOrders').textContent = orders.length;
+        document.getElementById('pendingOrders').textContent =
+            orders.filter(o => o.status === 'PENDING').length;
+        document.getElementById('unpaidOrders').textContent =
+            orders.filter(o => o.payment_status === 'UNPAID').length;
+
+        const revenue = orders
+            .filter(o => o.payment_status === 'PAID')
+            .reduce((sum, o) => sum + o.total, 0);
+        document.getElementById('revenueToday').textContent = formatCurrency(revenue);
+    }
+
+    function viewOrderDetails(orderId) {
+        selectedOrder = orders.find(o => o.order_id === orderId);
+        if (!selectedOrder) return;
+
+        document.getElementById('orderModalTitle').textContent = `Order Details - #${selectedOrder.order_id}`;
+
+        const subtotal = selectedOrder.total / 1.08;
+        const tax = selectedOrder.total - subtotal;
+
+        document.getElementById('orderModalBody').innerHTML = `
+        <div style="margin-bottom: 2rem;">
+          <div class="grid grid-2 mb-4">
+            <div>
+              <h4 class="font-semibold mb-2">Customer Information</h4>
+              <div class="text-muted" style="font-size: 0.875rem;">Name: ${selectedOrder.customer_name}</div>
+              <div class="text-muted" style="font-size: 0.875rem;">Email: ${selectedOrder.customer_email}</div>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">Order Information</h4>
+              <div class="text-muted" style="font-size: 0.875rem;">Date: ${formatDateTime(selectedOrder.order_date)}</div>
+              <div class="text-muted" style="font-size: 0.875rem;">
+                Status: <span class="badge ${getBadgeClass(selectedOrder.status)}">${selectedOrder.status}</span>
+              </div>
+              <div class="text-muted" style="font-size: 0.875rem;">
+                Payment: <span class="badge ${getBadgeClass(selectedOrder.payment_status)}">${selectedOrder.payment_status}</span>
+              </div>
+            </div>
+          </div>
+
+          <h4 class="font-semibold mb-2">Order Items</h4>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Brand</th>
+                <th class="text-center">Qty</th>
+                <th class="text-right">Price</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${selectedOrder.details.map(detail => `
+                <tr>
+                  <td>${detail.part_name}</td>
+                  <td>${detail.part_brand}</td>
+                  <td class="text-center">${detail.quantity}</td>
+                  <td class="text-right">${formatCurrency(detail.price)}</td>
+                  <td class="text-right font-semibold">${formatCurrency(detail.price * detail.quantity)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <div style="border-top: 1px solid var(--gray-200); padding-top: 1rem; margin-top: 1rem;">
+            <div class="flex justify-between mb-1">
+              <span>Subtotal:</span>
+              <span>${formatCurrency(subtotal)}</span>
+            </div>
+            <div class="flex justify-between mb-1 text-muted">
+              <span>Tax (8%):</span>
+              <span>${formatCurrency(tax)}</span>
+            </div>
+            <div class="flex justify-between" style="font-size: 1.25rem; font-weight: bold;">
+              <span>Total:</span>
+              <span style="color: var(--success-color);">${formatCurrency(selectedOrder.total)}</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem;">
+            <label class="form-label">Update Order Status</label>
+            <div class="flex gap-1" style="flex-wrap: wrap;">
+              <button class="btn btn-sm btn-outline" onclick="updateOrderStatus(${selectedOrder.order_id}, 'PENDING')">Pending</button>
+              <button class="btn btn-sm btn-outline" onclick="updateOrderStatus(${selectedOrder.order_id}, 'CONFIRMED')">Confirm</button>
+              <button class="btn btn-sm btn-outline" onclick="updateOrderStatus(${selectedOrder.order_id}, 'PROCESSING')">Processing</button>
+              <button class="btn btn-sm btn-outline" onclick="updateOrderStatus(${selectedOrder.order_id}, 'READY')">Ready</button>
+              <button class="btn btn-sm btn-outline" onclick="updateOrderStatus(${selectedOrder.order_id}, 'COMPLETED')">Complete</button>
+              <button class="btn btn-sm btn-danger" onclick="updateOrderStatus(${selectedOrder.order_id}, 'CANCELLED')">Cancel</button>
+            </div>
+          </div>
+
+          <div class="flex gap-2 mt-4" style="border-top: 1px solid var(--gray-200); padding-top: 1rem;">
+            <button class="btn btn-primary" style="flex: 1;" onclick="generateInvoice(${selectedOrder.order_id})">
+              🖨️ Generate Invoice
+            </button>
+            <button class="btn btn-outline" style="flex: 1;" onclick="closeModal('orderModal'); openPaymentModal(${selectedOrder.order_id});"
+                    ${selectedOrder.payment_status === 'PAID' ? 'disabled' : ''}>
+              💳 Process Payment
+            </button>
+          </div>
+        </div>
+      `;
+
+        openModal('orderModal');
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+        try {
+            const resp = await fetch(`${API_BASE_URL}/sales/orders/${orderId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (!resp.ok) {
+                let errBody = {};
+                try { errBody = await resp.json(); } catch(e) {}
+                showToast((errBody.error || `Failed to update status (${resp.status})`), 'error');
+                return;
+            }
+
+            const updated = await resp.json();
+            // Replace locally with server value
+            orders = orders.map(order => order.order_id === updated.order_id ? updated : order);
+
+            displayOrders();
+            updateStats();
+            showToast(`Order status updated to ${newStatus}`, 'success');
+
+            if (selectedOrder && selectedOrder.order_id === orderId) {
+                closeModal('orderModal');
+            }
+        } catch (err) {
+            console.error('Failed to update order status', err);
+            showToast('Could not update order status; offline update applied', 'error');
+            // Fallback to local update to keep UI responsive
+            orders = orders.map(order =>
+                order.order_id === orderId ? { ...order, status: newStatus } : order
+            );
+            displayOrders();
+            updateStats();
+            if (selectedOrder && selectedOrder.order_id === orderId) {
+                closeModal('orderModal');
+            }
+        }
+    }
+
+    function generateInvoice(orderId) {
+        const order = orders.find(o => o.order_id === orderId);
+        if (!order) return;
+
+        const subtotal = order.total / 1.08;
+        const tax = order.total - subtotal;
+
+        const billHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Invoice - Order #${order.order_id}</title>
+          <style>
+            body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+            .header h1 { color: #2563eb; margin: 0; }
+            .info-section { display: flex; justify-content: space-between; margin: 20px 0; }
+            .info-box { flex: 1; }
+            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+            th { background-color: #f3f4f6; font-weight: 600; }
+            .totals { text-align: right; margin-top: 20px; }
+            .totals div { padding: 5px 0; }
+            .grand-total { font-size: 1.2em; font-weight: bold; color: #2563eb; padding-top: 10px; border-top: 2px solid #333; }
+            .footer { margin-top: 40px; text-align: center; color: #666; font-size: 0.9em; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>🖥️ Computer Shop</h1>
+            <p>Sales Invoice</p>
+          </div>
+
+          <div class="info-section">
+            <div class="info-box">
+              <h3>Bill To:</h3>
+              <p><strong>${order.customer_name}</strong></p>
+              <p>${order.customer_email}</p>
+            </div>
+            <div class="info-box" style="text-align: right;">
+              <h3>Invoice Details:</h3>
+              <p><strong>Invoice #:</strong> ${order.order_id}</p>
+              <p><strong>Date:</strong> ${formatDate(order.order_date)}</p>
+              <p><strong>Status:</strong> ${order.status}</p>
+              <p><strong>Payment:</strong> ${order.payment_status}</p>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Brand</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.details.map(detail => `
+                <tr>
+                  <td>${detail.part_name}</td>
+                  <td>${detail.part_brand}</td>
+                  <td>${detail.quantity}</td>
+                  <td>${formatCurrency(detail.price)}</td>
+                  <td>${formatCurrency(detail.price * detail.quantity)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+
+          <div class="totals">
+            <div><strong>Subtotal:</strong> ${formatCurrency(subtotal)}</div>
+            <div><strong>Tax (8%):</strong> ${formatCurrency(tax)}</div>
+            <div class="grand-total"><strong>Total Amount:</strong> ${formatCurrency(order.total)}</div>
+            ${order.payment_status === 'PAID' ?
+            '<div style="color: #10b981; margin-top: 10px;"><strong>✓ PAID IN FULL</strong></div>' :
+            order.payment_status === 'PARTIAL' ?
+                '<div style="color: #f59e0b; margin-top: 10px;"><strong>⚠ PARTIALLY PAID</strong></div>' :
+                '<div style="color: #ef4444; margin-top: 10px;"><strong>⚠ PAYMENT PENDING</strong></div>'
+        }
+          </div>
+
+          <div class="footer">
+            <p>Thank you for your business!</p>
+            <p>For questions, contact us at support@computershop.com</p>
+            <button class="no-print" onclick="window.print()" style="margin-top: 20px; padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Invoice</button>
+          </div>
+        </body>
+        </html>
+      `;
+
+        const billWindow = window.open('', '_blank');
+        if (billWindow) {
+            billWindow.document.write(billHTML);
+            billWindow.document.close();
+        }
+    }
+
+    // ==================== PAYMENTS ====================
+    function openPaymentModal(orderId) {
+        selectedOrder = orders.find(o => o.order_id === orderId);
+        if (!selectedOrder) return;
+
+        document.getElementById('paymentCustomerName').textContent = selectedOrder.customer_name;
+        document.getElementById('paymentOrderTotal').textContent = formatCurrency(selectedOrder.total);
+        document.getElementById('paymentAmount').value = selectedOrder.total.toFixed(2);
+
+        openModal('paymentModal');
+    }
+
+    async function processPayment() {
+        if (!selectedOrder) return;
+
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
+        const method = document.getElementById('paymentMethod').value;
+
+        if (!amount || amount <= 0) {
+            showToast('Please enter a valid payment amount', 'error');
+            return;
+        }
+
+        if (amount > selectedOrder.total) {
+            showToast('Payment amount cannot exceed order total', 'error');
+            return;
+        }
+
+        try {
+            const payload = { amount: amount, method: method };
+            const resp = await fetch(`${API_BASE_URL}/sales/orders/${selectedOrder.order_id}/payments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resp.ok) {
+                let errBody = {};
+                try { errBody = await resp.json(); } catch(e) {}
+                showToast((errBody.error || `Failed to record payment (${resp.status})`), 'error');
+                return;
+            }
+
+            const updated = await resp.json();
+            orders = orders.map(order => order.order_id === updated.order_id ? updated : order);
+
+            displayOrders();
+            updateStats();
+            closeModal('paymentModal');
+            showToast(`Payment of ${formatCurrency(amount)} recorded successfully`, 'success');
+        } catch (err) {
+            console.error('Failed to record payment', err);
+            showToast('Could not record payment (offline); update will not be persisted', 'error');
+        }
+     }
+
+    // ==================== SUPPORT TICKETS ====================
+    async function loadTickets() {
+        // API call: const response = await fetch(`${API_BASE_URL}/tickets`);
+        // tickets = await response.json();
+        tickets = MOCK_TICKETS;
+        displayTickets();
+    }
+
+    function displayTickets() {
+        const container = document.getElementById('ticketsList');
+        document.getElementById('ticketsCount').textContent = tickets.length;
+
+        if (tickets.length === 0) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎫</div><p>No support tickets</p></div>';
+            return;
+        }
+
+        container.innerHTML = tickets.map(ticket => `
+        <div class="ticket-card ${selectedTicket?.ticket_id === ticket.ticket_id ? 'selected' : ''}"
+             onclick="selectTicket(${ticket.ticket_id})">
+          <div class="flex justify-between items-center mb-2">
+            <div class="font-semibold">#${ticket.ticket_id} - ${ticket.subject}</div>
+            <span class="badge ${getBadgeClass(ticket.status)}">${ticket.status}</span>
+          </div>
+          <div class="text-muted mb-1" style="font-size: 0.875rem;">${ticket.customer_name}</div>
+          <div class="flex gap-1 mb-2">
+            <span class="badge badge-secondary">${ticket.category}</span>
+            <span class="badge ${ticket.priority === 'HIGH' ? 'badge-danger' : ticket.priority === 'MEDIUM' ? 'badge-warning' : 'badge-secondary'}">
+              ${ticket.priority}
+            </span>
+          </div>
+          <div class="text-muted" style="font-size: 0.75rem;">
+            ${ticket.messages.length} messages • ${formatDate(ticket.created_at)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectTicket(ticketId) {
+        selectedTicket = tickets.find(t => t.ticket_id === ticketId);
+        displayTicketDetails();
+        displayTickets();
+    }
+
+    function displayTicketDetails() {
+        if (!selectedTicket) {
+            document.getElementById('ticketDetailsTitle').textContent = 'Select a Ticket';
+            document.getElementById('ticketDetailsBody').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">💬</div>
+            <p>Select a ticket to view details and reply</p>
+          </div>
+        `;
+            return;
+        }
+
+        document.getElementById('ticketDetailsTitle').textContent = `Ticket #${selectedTicket.ticket_id}`;
+
+        document.getElementById('ticketDetailsBody').innerHTML = `
+        <div class="flex gap-1 mb-4" style="flex-wrap: wrap;">
+          <span class="badge ${getBadgeClass(selectedTicket.status)}">${selectedTicket.status}</span>
+          <span class="badge badge-secondary">${selectedTicket.category}</span>
+          <span class="badge ${selectedTicket.priority === 'HIGH' ? 'badge-danger' : selectedTicket.priority === 'MEDIUM' ? 'badge-warning' : 'badge-secondary'}">
+            ${selectedTicket.priority}
+          </span>
+        </div>
+
+        <h4 class="font-semibold mb-2">Messages</h4>
+        <div class="messages-container">
+          ${selectedTicket.messages.map(msg => `
+            <div class="message ${msg.sender_type === 'CUSTOMER' ? 'customer' : 'staff'}">
+              <div class="message-header">
+                <span class="message-sender">
+                  ${msg.sender_type === 'CUSTOMER' ? '👤' : '👨‍💼'} ${msg.sender_name}
+                </span>
+                <span class="message-time">${formatDateTime(msg.created_at)}</span>
+              </div>
+              <p style="margin: 0; font-size: 0.875rem;">${msg.message}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${selectedTicket.status !== 'CLOSED' ? `
+          <div class="form-group">
+            <label class="form-label">Your Reply</label>
+            <textarea id="replyMessage" class="form-textarea" rows="4" placeholder="Type your reply..."></textarea>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-primary" style="flex: 1;" onclick="sendReply()">Send Reply</button>
+            <button class="btn btn-outline" onclick="updateTicketStatus(${selectedTicket.ticket_id}, 'RESOLVED')">Mark Resolved</button>
+          </div>
+        ` : `
+          <div style="padding: 1rem; background: #d1fae5; border: 1px solid #6ee7b7; border-radius: var(--border-radius); color: #065f46;">
+            <strong>✓ Ticket Closed</strong>
+            <p style="margin-top: 0.25rem; font-size: 0.875rem;">This ticket has been resolved and closed.</p>
+          </div>
+        `}
+
+        <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+          <label class="form-label">Update Ticket Status</label>
+          <div class="flex gap-1" style="flex-wrap: wrap;">
+            <button class="btn btn-sm btn-outline" onclick="updateTicketStatus(${selectedTicket.ticket_id}, 'OPEN')">Open</button>
+            <button class="btn btn-sm btn-outline" onclick="updateTicketStatus(${selectedTicket.ticket_id}, 'IN_PROGRESS')">In Progress</button>
+            <button class="btn btn-sm btn-outline" onclick="updateTicketStatus(${selectedTicket.ticket_id}, 'RESOLVED')">Resolved</button>
+            <button class="btn btn-sm btn-outline" onclick="updateTicketStatus(${selectedTicket.ticket_id}, 'CLOSED')">Close</button>
+          </div>
+        </div>
+      `;
+    }
+
+    async function sendReply() {
+        const message = document.getElementById('replyMessage').value.trim();
+        if (!message) {
+            showToast('Please enter a message', 'error');
+            return;
+        }
+
+        // API call to send reply
+        const newMessage = {
+            message_id: Date.now(),
+            sender_type: 'STAFF',
+            sender_name: 'Sales Staff',
+            message: message,
+            created_at: new Date().toISOString()
+        };
+
+        tickets = tickets.map(ticket => {
+            if (ticket.ticket_id === selectedTicket.ticket_id) {
+                return {
+                    ...ticket,
+                    messages: [...ticket.messages, newMessage]
+                };
+            }
+            return ticket;
+        });
+
+        selectedTicket.messages.push(newMessage);
+        displayTicketDetails();
+        showToast('Reply sent successfully', 'success');
+    }
+
+    async function updateTicketStatus(ticketId, newStatus) {
+        // API call: await fetch(`${API_BASE_URL}/tickets/${ticketId}/status`, {
+        //   method: 'PUT',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ status: newStatus })
+        // });
+
+        tickets = tickets.map(ticket =>
+            ticket.ticket_id === ticketId ? { ...ticket, status: newStatus } : ticket
+        );
+
+        if (selectedTicket?.ticket_id === ticketId) {
+            selectedTicket.status = newStatus;
+        }
+
+        displayTickets();
+        displayTicketDetails();
+        showToast(`Ticket status updated to ${newStatus}`, 'success');
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    document.getElementById('searchInput').addEventListener('input', displayOrders);
+    document.getElementById('statusFilter').addEventListener('change', displayOrders);
+    document.getElementById('paymentFilter').addEventListener('change', displayOrders);
+
+    // Click outside modals to close
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+
+    // ==================== INITIALIZATION ====================
+    function init() {
+        loadOrders();
+        loadTickets();
+    }
+
+    // Run on page load
+    init();
+</script>
+</body>
+</html>
+
