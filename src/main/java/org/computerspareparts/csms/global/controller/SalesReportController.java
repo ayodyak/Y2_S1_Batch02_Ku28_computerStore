@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -56,23 +55,5 @@ public class SalesReportController {
     public ResponseEntity<?> deleteReport(@PathVariable Long id) {
         salesReportService.deleteReport(id);
         return ResponseEntity.ok(java.util.Map.of("status", "deleted"));
-    }
-
-    // New: list all reports with optional date range filtering (open to admins/users depending on security)
-    @GetMapping("/all")
-    public ResponseEntity<List<SalesReportDTO>> listAllReports(
-            @RequestParam(name = "startDate", required = false) String startDateStr,
-            @RequestParam(name = "endDate", required = false) String endDateStr
-    ) {
-        try {
-            LocalDate start = startDateStr != null && !startDateStr.isBlank() ? LocalDate.parse(startDateStr) : null;
-            LocalDate end = endDateStr != null && !endDateStr.isBlank() ? LocalDate.parse(endDateStr) : null;
-            List<SalesReportDTO> reports = salesReportService.listAllReports(start, end);
-            return ResponseEntity.ok(reports);
-        } catch (java.time.format.DateTimeParseException ex) {
-            return ResponseEntity.badRequest().body(List.of());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(List.of());
-        }
     }
 }
