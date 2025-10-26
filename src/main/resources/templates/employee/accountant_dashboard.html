@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Accountant Dashboard - Computer Shop</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #0891b2;
+            --primary-hover: #0e7490;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --border-radius: 8px;
+            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background-color: var(--gray-50);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-title p {
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .tab-list {
+            display: flex;
+            border-bottom: 2px solid var(--gray-200);
+            padding: 0;
+            list-style: none;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--gray-600);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            background: #ecfeff;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .card-description {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .stat-card.danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .stat-card.info {
+            border-left-color: var(--info-color);
+        }
+
+        .stat-label {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--gray-900);
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success-color);
+        }
+
+        .stat-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .table td {
+            font-size: 0.875rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-primary {
+            background: #cffafe;
+            color: #0e7490;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content.large {
+            max-width: 900px;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--gray-50);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            background: var(--gray-50);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            color: var(--gray-700);
+            background: var(--gray-200);
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .chart-container.large {
+            height: 400px;
+        }
+
+        /* Report Card */
+        .report-card {
+            padding: 1.5rem;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .report-card:hover {
+            box-shadow: var(--box-shadow);
+            border-color: var(--primary-color);
+        }
+
+        /* Toast */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            min-width: 250px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            color: white;
+            box-shadow: var(--box-shadow-lg);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            background: var(--success-color);
+        }
+
+        .toast-error {
+            background: var(--danger-color);
+        }
+
+        .toast-info {
+            background: var(--info-color);
+        }
+
+        /* Utility Classes */
+        .flex {
+            display: flex;
+        }
+
+        .gap-1 {
+            gap: 0.5rem;
+        }
+
+        .gap-2 {
+            gap: 1rem;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--gray-500);
+        }
+
+        .mb-1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .mt-2 {
+            margin-top: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .font-mono {
+            font-family: 'Courier New', monospace;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-200);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.125rem;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--gray-300);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .stats-grid,
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: scroll;
+            }
+
+            .tab-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<div class="header">
+    <div class="header-content">
+        <div class="header-title">
+            <h1>💰 Finance Accountant Dashboard</h1>
+            <p>Financial reports, analytics, and revenue tracking</p>
+        </div>
+        <div>
+            <span class="badge badge-primary">💼 Finance Portal</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Tabs -->
+    <div class="tabs">
+        <ul class="tab-list">
+            <li>
+                <button class="tab-button active" data-tab="overview" onclick="switchTab('overview')">
+                    📊 Overview
+                </button>
+            </li>
+            <li>
+                <button class="tab-button" data-tab="daily" onclick="switchTab('daily')">
+                    📅 Daily Income
+                </button>
+            </li>
+            <li>
+                <button class="tab-button" data-tab="monthly" onclick="switchTab('monthly')">
+                    📆 Monthly Income
+                </button>
+            </li>
+            <li>
+                <button class="tab-button" data-tab="reports" onclick="switchTab('reports')">
+                    📈 Sales Reports
+                </button>
+            </li>
+            <li>
+                <button class="tab-button" data-tab="analytics" onclick="switchTab('analytics')">
+                    📉 Analytics
+                </button>
+            </li>
+        </ul>
+
+        <!-- Overview Tab -->
+        <div id="overviewTab" class="tab-content active">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card success">
+                    <div class="stat-label">💵 Today's Revenue</div>
+                    <div class="stat-value" id="todayRevenue">$0.00</div>
+                    <div class="stat-change positive" id="todayChange">
+                        <span>↑</span>
+                        <span>+0% from yesterday</span>
+                    </div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-label">📅 This Month</div>
+                    <div class="stat-value" id="monthRevenue">$0.00</div>
+                    <div class="stat-change positive" id="monthChange">
+                        <span>↑</span>
+                        <span>+0% from last month</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">📈 Total Orders</div>
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-change positive">
+                        <span>↑</span>
+                        <span id="ordersChange">+0 this month</span>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-label">📊 Average Order</div>
+                    <div class="stat-value" id="avgOrder">$0.00</div>
+                    <div class="stat-change" id="avgChange">
+                        <span>=</span>
+                        <span>No change</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-2">
+                <!-- Revenue Trend Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Revenue Trend (Last 30 Days)</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Order Status Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Order Status Distribution</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Recent High-Value Transactions</div>
+                    <div class="card-description">Last 10 transactions over $500</div>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Payment Method</th>
+                            <th class="text-right">Amount</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="recentTransactionsBody">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Loading...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Income Tab -->
+        <div id="dailyTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="card-title">Daily Income Summary</div>
+                            <div class="card-description">View and export daily revenue reports</div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button class="btn btn-outline" onclick="exportDailyCSV()">
+                                📥 Export CSV
+                            </button>
+                            <button class="btn btn-primary" onclick="generateDailySummary()">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-3 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">Select Date</label>
+                        <input type="date" id="dailyDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date Range Start</label>
+                        <input type="date" id="dailyRangeStart" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date Range End</label>
+                        <input type="date" id="dailyRangeEnd" class="form-input">
+                    </div>
+                </div>
+
+                <div id="dailySummaryContent"></div>
+            </div>
+        </div>
+
+        <!-- Monthly Income Tab -->
+        <div id="monthlyTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="card-title">Monthly Income Summary</div>
+                            <div class="card-description">Comprehensive monthly financial reports</div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button class="btn btn-outline" onclick="exportMonthlyCSV()">
+                                📥 Export CSV
+                            </button>
+                            <button class="btn btn-primary" onclick="generateMonthlySummary()">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">Select Month</label>
+                        <input type="month" id="monthlyMonth" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Compare With</label>
+                        <input type="month" id="monthlyCompare" class="form-input">
+                    </div>
+                </div>
+
+                <div id="monthlySummaryContent"></div>
+            </div>
+
+            <!-- Monthly Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Monthly Revenue Comparison</div>
+                </div>
+                <div class="chart-container large">
+                    <canvas id="monthlyComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Reports Tab -->
+        <div id="reportsTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="card-title">Sales Reports (<span id="reportsCount">0</span>)</div>
+                            <div class="card-description">Create and manage custom sales reports</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('createReportModal')">
+                            ➕ Create Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-3 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">Search Reports</label>
+                        <input type="text" id="reportSearch" class="form-input" placeholder="Report name...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Report Type</label>
+                        <select id="reportTypeFilter" class="form-select">
+                            <option value="all">All Types</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sort By</label>
+                        <select id="reportSort" class="form-select">
+                            <option value="date-desc">Date (Newest First)</option>
+                            <option value="date-asc">Date (Oldest First)</option>
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="reportsList"></div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analyticsTab" class="tab-content">
+            <!-- Category Revenue Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Revenue by Category</div>
+                    <div class="card-description">Product category performance analysis</div>
+                </div>
+                <div class="chart-container large">
+                    <canvas id="categoryRevenueChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <!-- Payment Methods Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Payment Methods</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="paymentMethodsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Products -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Top 5 Products by Revenue</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Product</th>
+                                <th>Units Sold</th>
+                                <th class="text-right">Revenue</th>
+                            </tr>
+                            </thead>
+                            <tbody id="topProductsBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Report Modal -->
+<div id="createReportModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Create Sales Report</div>
+            <button class="close-modal" onclick="closeModal('createReportModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="createReportForm">
+                <div class="form-group">
+                    <label class="form-label">Report Name *</label>
+                    <input type="text" id="reportName" class="form-input" placeholder="e.g., Q4 Sales Summary" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Report Type *</label>
+                    <select id="reportType" class="form-select" required>
+                        <option value="">Select type</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Start Date *</label>
+                        <input type="date" id="reportStartDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date *</label>
+                        <input type="date" id="reportEndDate" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="reportDescription" class="form-textarea" rows="3" placeholder="Optional notes about this report"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('createReportModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="createReport()">Create Report</button>
+        </div>
+    </div>
+</div>
+
+<!-- View Report Modal -->
+<div id="viewReportModal" class="modal">
+    <div class="modal-content large">
+        <div class="modal-header">
+            <div class="modal-title" id="viewReportTitle">Report Details</div>
+            <button class="close-modal" onclick="closeModal('viewReportModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="viewReportBody"></div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('viewReportModal')">Close</button>
+            <button class="btn btn-primary" onclick="exportCurrentReport()">📥 Export PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<script>
+    // ==================== CONFIGURATION ====================
+    const API_BASE_URL = 'http://localhost:8080/api'; // Update with your Java backend URL
+    const currentAccountantId = 1; // Replace with actual logged-in accountant ID
+
+    // ==================== STATE ====================
+    let salesReports = [];
+    let orders = [];
+    let dailyIncome = [];
+    let monthlyIncome = [];
+    let currentReport = null;
+
+    // Chart instances
+    let revenueTrendChart = null;
+    let orderStatusChart = null;
+    let monthlyComparisonChart = null;
+    let categoryRevenueChart = null;
+    let paymentMethodsChart = null;
+
+    // ==================== MOCK DATA ====================
+    const MOCK_ORDERS = [
+        { order_id: 1001, customer_name: "John Doe", date: "2025-10-22", items: 3, payment_method: "Credit Card", total: 1249.99, status: "COMPLETED" },
+        { order_id: 1002, customer_name: "Jane Smith", date: "2025-10-22", items: 2, payment_method: "Cash", total: 879.98, status: "COMPLETED" },
+        { order_id: 1003, customer_name: "Bob Johnson", date: "2025-10-21", items: 5, payment_method: "Bank Transfer", total: 2199.95, status: "COMPLETED" },
+        { order_id: 1004, customer_name: "Alice Brown", date: "2025-10-21", items: 1, payment_method: "Credit Card", total: 549.99, status: "COMPLETED" },
+        { order_id: 1005, customer_name: "Charlie Wilson", date: "2025-10-20", items: 4, payment_method: "Debit Card", total: 1599.96, status: "COMPLETED" },
+        { order_id: 1006, customer_name: "David Lee", date: "2025-10-20", items: 2, payment_method: "Cash", total: 699.98, status: "COMPLETED" },
+        { order_id: 1007, customer_name: "Emma Davis", date: "2025-10-19", items: 3, payment_method: "Credit Card", total: 1899.97, status: "COMPLETED" },
+        { order_id: 1008, customer_name: "Frank Miller", date: "2025-10-18", items: 1, payment_method: "Bank Transfer", total: 1599.99, status: "COMPLETED" },
+        { order_id: 1009, customer_name: "Grace Taylor", date: "2025-10-17", items: 2, payment_method: "Credit Card", total: 799.98, status: "COMPLETED" },
+        { order_id: 1010, customer_name: "Henry Anderson", date: "2025-10-16", items: 6, payment_method: "Cash", total: 3299.94, status: "COMPLETED" }
+    ];
+
+    const MOCK_REPORTS = [
+        {
+            report_id: 1,
+            name: "October 2025 Summary",
+            type: "monthly",
+            start_date: "2025-10-01",
+            end_date: "2025-10-31",
+            created_at: "2025-10-22T10:00:00",
+            description: "Complete October sales report",
+            total_revenue: 25849.75,
+            total_orders: 156,
+            avg_order_value: 165.70
+        },
+        {
+            report_id: 2,
+            name: "Week 42 Sales",
+            type: "weekly",
+            start_date: "2025-10-14",
+            end_date: "2025-10-20",
+            created_at: "2025-10-21T09:00:00",
+            description: "Weekly report for October 14-20",
+            total_revenue: 8449.89,
+            total_orders: 47,
+            avg_order_value: 179.78
+        }
+    ];
+
+    // ==================== UTILITY FUNCTIONS ====================
+    function formatCurrency(amount) {
+        return `$${parseFloat(amount).toFixed(2)}`;
+    }
+
+    function formatDate(dateString) {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+
+    function formatDateTime(dateString) {
+        return new Date(dateString).toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}</span><span>${message}</span>`;
+
+        const container = document.getElementById('toastContainer');
+        container.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function getBadgeClass(status) {
+        const map = {
+            'PENDING': 'badge-warning',
+            'CONFIRMED': 'badge-info',
+            'SHIPPED': 'badge-primary',
+            'COMPLETED': 'badge-success',
+            'CANCELLED': 'badge-danger'
+        };
+        return map[status] || 'badge-secondary';
+    }
+
+    // ==================== TAB MANAGEMENT ====================
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tab === tabName) {
+                btn.classList.add('active');
+            }
+        });
+
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(tabName + 'Tab').classList.add('active');
+
+        if (tabName === 'overview') loadOverview();
+        if (tabName === 'daily') initDailyIncome();
+        if (tabName === 'monthly') initMonthlyIncome();
+        if (tabName === 'reports') loadReports();
+        if (tabName === 'analytics') loadAnalytics();
+    }
+
+    // ==================== OVERVIEW ====================
+    function loadOverview() {
+        orders = MOCK_ORDERS;
+        updateOverviewStats();
+        createRevenueTrendChart();
+        createOrderStatusChart();
+        displayRecentTransactions();
+    }
+
+    function updateOverviewStats() {
+        const today = new Date().toISOString().split('T')[0];
+        const todayOrders = orders.filter(o => o.date === today);
+        const todayRevenue = todayOrders.reduce((sum, o) => sum + o.total, 0);
+
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const monthOrders = orders.filter(o => o.date.startsWith(currentMonth));
+        const monthRevenue = monthOrders.reduce((sum, o) => sum + o.total, 0);
+
+        const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+        const avgOrderValue = totalRevenue / orders.length || 0;
+
+        document.getElementById('todayRevenue').textContent = formatCurrency(todayRevenue);
+        document.getElementById('monthRevenue').textContent = formatCurrency(monthRevenue);
+        document.getElementById('totalOrders').textContent = orders.length;
+        document.getElementById('avgOrder').textContent = formatCurrency(avgOrderValue);
+        document.getElementById('ordersChange').textContent = `+${monthOrders.length} this month`;
+    }
+
+    function createRevenueTrendChart() {
+        const ctx = document.getElementById('revenueTrendChart');
+        if (!ctx) return;
+
+        // Generate last 30 days data
+        const labels = [];
+        const data = [];
+        for (let i = 29; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+            const dayOrders = orders.filter(o => o.date === dateStr);
+            const dayRevenue = dayOrders.reduce((sum, o) => sum + o.total, 0);
+            data.push(dayRevenue);
+        }
+
+        if (revenueTrendChart) revenueTrendChart.destroy();
+
+        revenueTrendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Daily Revenue',
+                    data: data,
+                    borderColor: '#0891b2',
+                    backgroundColor: 'rgba(8, 145, 178, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createOrderStatusChart() {
+        const ctx = document.getElementById('orderStatusChart');
+        if (!ctx) return;
+
+        const statusCounts = {
+            'COMPLETED': 0,
+            'PENDING': 0,
+            'SHIPPED': 0,
+            'CANCELLED': 0
+        };
+
+        orders.forEach(order => {
+            if (statusCounts[order.status] !== undefined) {
+                statusCounts[order.status]++;
+            }
+        });
+
+        if (orderStatusChart) orderStatusChart.destroy();
+
+        orderStatusChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'Pending', 'Shipped', 'Cancelled'],
+                datasets: [{
+                    data: [
+                        statusCounts.COMPLETED,
+                        statusCounts.PENDING,
+                        statusCounts.SHIPPED,
+                        statusCounts.CANCELLED
+                    ],
+                    backgroundColor: [
+                        '#10b981',
+                        '#f59e0b',
+                        '#3b82f6',
+                        '#ef4444'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    function displayRecentTransactions() {
+        const tbody = document.getElementById('recentTransactionsBody');
+        const highValue = orders.filter(o => o.total >= 500).slice(0, 10);
+
+        if (highValue.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No high-value transactions</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = highValue.map(order => `
+        <tr>
+          <td class="font-mono">#${order.order_id}</td>
+          <td>${order.customer_name}</td>
+          <td>${formatDate(order.date)}</td>
+          <td>${order.items} items</td>
+          <td>${order.payment_method}</td>
+          <td class="text-right font-semibold">${formatCurrency(order.total)}</td>
+          <td><span class="badge ${getBadgeClass(order.status)}">${order.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    // ==================== DAILY INCOME ====================
+    function initDailyIncome() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dailyDate').value = today;
+
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        document.getElementById('dailyRangeStart').value = weekAgo.toISOString().split('T')[0];
+        document.getElementById('dailyRangeEnd').value = today;
+
+        generateDailySummary();
+    }
+
+    function generateDailySummary() {
+        const date = document.getElementById('dailyDate').value;
+        const rangeStart = document.getElementById('dailyRangeStart').value;
+        const rangeEnd = document.getElementById('dailyRangeEnd').value;
+
+        let content = '';
+
+        if (date) {
+            const dayOrders = orders.filter(o => o.date === date);
+            const dayRevenue = dayOrders.reduce((sum, o) => sum + o.total, 0);
+            const avgOrder = dayOrders.length > 0 ? dayRevenue / dayOrders.length : 0;
+
+            content += `
+          <div class="summary-box mb-2">
+            <h3 class="font-semibold mb-2">Summary for ${formatDate(date)}</h3>
+            <div class="summary-row">
+              <span>Total Orders:</span>
+              <span class="font-semibold">${dayOrders.length}</span>
+            </div>
+            <div class="summary-row">
+              <span>Total Revenue:</span>
+              <span class="font-semibold">${formatCurrency(dayRevenue)}</span>
+            </div>
+            <div class="summary-row">
+              <span>Average Order Value:</span>
+              <span class="font-semibold">${formatCurrency(avgOrder)}</span>
+            </div>
+          </div>
+        `;
+        }
+
+        if (rangeStart && rangeEnd) {
+            const rangeOrders = orders.filter(o => o.date >= rangeStart && o.date <= rangeEnd);
+
+            // Group by date
+            const dailyData = {};
+            rangeOrders.forEach(order => {
+                if (!dailyData[order.date]) {
+                    dailyData[order.date] = { orders: [], revenue: 0 };
+                }
+                dailyData[order.date].orders.push(order);
+                dailyData[order.date].revenue += order.total;
+            });
+
+            const totalRevenue = rangeOrders.reduce((sum, o) => sum + o.total, 0);
+
+            content += `
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Date Range: ${formatDate(rangeStart)} - ${formatDate(rangeEnd)}</div>
+            </div>
+            <div class="summary-box mb-2">
+              <div class="summary-row">
+                <span>Total Orders:</span>
+                <span class="font-semibold">${rangeOrders.length}</span>
+              </div>
+              <div class="summary-row">
+                <span>Total Revenue:</span>
+                <span class="font-semibold">${formatCurrency(totalRevenue)}</span>
+              </div>
+              <div class="summary-row">
+                <span>Average Daily Revenue:</span>
+                <span class="font-semibold">${formatCurrency(totalRevenue / Object.keys(dailyData).length || 0)}</span>
+              </div>
+            </div>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Orders</th>
+                    <th class="text-right">Revenue</th>
+                    <th class="text-right">Avg Order</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${Object.keys(dailyData).sort().reverse().map(date => `
+                    <tr>
+                      <td>${formatDate(date)}</td>
+                      <td>${dailyData[date].orders.length}</td>
+                      <td class="text-right font-semibold">${formatCurrency(dailyData[date].revenue)}</td>
+                      <td class="text-right">${formatCurrency(dailyData[date].revenue / dailyData[date].orders.length)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+        }
+
+        document.getElementById('dailySummaryContent').innerHTML = content || '<div class="empty-state"><div class="empty-state-icon">📅</div><p>Select a date or date range to view summary</p></div>';
+    }
+
+    function exportDailyCSV() {
+        const rangeStart = document.getElementById('dailyRangeStart').value;
+        const rangeEnd = document.getElementById('dailyRangeEnd').value;
+
+        if (!rangeStart || !rangeEnd) {
+            showToast('Please select a date range', 'error');
+            return;
+        }
+
+        const rangeOrders = orders.filter(o => o.date >= rangeStart && o.date <= rangeEnd);
+
+        let csv = 'Order ID,Customer,Date,Items,Payment Method,Amount,Status\n';
+        rangeOrders.forEach(order => {
+            csv += `${order.order_id},${order.customer_name},${order.date},${order.items},${order.payment_method},${order.total},${order.status}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `daily-income-${rangeStart}-to-${rangeEnd}.csv`;
+        a.click();
+
+        showToast('Daily income report exported', 'success');
+    }
+
+    // ==================== MONTHLY INCOME ====================
+    function initMonthlyIncome() {
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        document.getElementById('monthlyMonth').value = currentMonth;
+
+        const lastMonth = new Date();
+        lastMonth.setMonth(lastMonth.getMonth() - 1);
+        document.getElementById('monthlyCompare').value = lastMonth.toISOString().slice(0, 7);
+
+        generateMonthlySummary();
+    }
+
+    function generateMonthlySummary() {
+        const month = document.getElementById('monthlyMonth').value;
+        const compareMonth = document.getElementById('monthlyCompare').value;
+
+        const monthOrders = orders.filter(o => o.date.startsWith(month));
+        const monthRevenue = monthOrders.reduce((sum, o) => sum + o.total, 0);
+
+        let content = `
+        <div class="summary-box mb-2">
+          <h3 class="font-semibold mb-2">Summary for ${new Date(month + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</h3>
+          <div class="summary-row">
+            <span>Total Orders:</span>
+            <span class="font-semibold">${monthOrders.length}</span>
+          </div>
+          <div class="summary-row">
+            <span>Total Revenue:</span>
+            <span class="font-semibold">${formatCurrency(monthRevenue)}</span>
+          </div>
+          <div class="summary-row">
+            <span>Average Order Value:</span>
+            <span class="font-semibold">${formatCurrency(monthOrders.length > 0 ? monthRevenue / monthOrders.length : 0)}</span>
+          </div>
+        </div>
+      `;
+
+        if (compareMonth) {
+            const compareOrders = orders.filter(o => o.date.startsWith(compareMonth));
+            const compareRevenue = compareOrders.reduce((sum, o) => sum + o.total, 0);
+            const difference = monthRevenue - compareRevenue;
+            const percentChange = compareRevenue > 0 ? ((difference / compareRevenue) * 100) : 0;
+
+            content += `
+          <div class="summary-box">
+            <h3 class="font-semibold mb-2">Comparison with ${new Date(compareMonth + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</h3>
+            <div class="summary-row">
+              <span>Previous Month Revenue:</span>
+              <span class="font-semibold">${formatCurrency(compareRevenue)}</span>
+            </div>
+            <div class="summary-row">
+              <span>Difference:</span>
+              <span class="font-semibold" style="color: ${difference >= 0 ? 'var(--success-color)' : 'var(--danger-color)'}">
+                ${difference >= 0 ? '+' : ''}${formatCurrency(difference)} (${percentChange >= 0 ? '+' : ''}${percentChange.toFixed(1)}%)
+              </span>
+            </div>
+            <div class="summary-row">
+              <span>Orders Change:</span>
+              <span class="font-semibold">
+                ${monthOrders.length - compareOrders.length >= 0 ? '+' : ''}${monthOrders.length - compareOrders.length} orders
+              </span>
+            </div>
+          </div>
+        `;
+
+            createMonthlyComparisonChart(month, compareMonth);
+        }
+
+        document.getElementById('monthlySummaryContent').innerHTML = content;
+    }
+
+    function createMonthlyComparisonChart(month1, month2) {
+        const ctx = document.getElementById('monthlyComparisonChart');
+        if (!ctx) return;
+
+        const month1Orders = orders.filter(o => o.date.startsWith(month1));
+        const month2Orders = orders.filter(o => o.date.startsWith(month2));
+
+        const month1Revenue = month1Orders.reduce((sum, o) => sum + o.total, 0);
+        const month2Revenue = month2Orders.reduce((sum, o) => sum + o.total, 0);
+
+        if (monthlyComparisonChart) monthlyComparisonChart.destroy();
+
+        monthlyComparisonChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    new Date(month2 + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+                    new Date(month1 + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
+                ],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [month2Revenue, month1Revenue],
+                    backgroundColor: ['#6b7280', '#0891b2']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function exportMonthlyCSV() {
+        const month = document.getElementById('monthlyMonth').value;
+        if (!month) {
+            showToast('Please select a month', 'error');
+            return;
+        }
+
+        const monthOrders = orders.filter(o => o.date.startsWith(month));
+
+        let csv = 'Order ID,Customer,Date,Items,Payment Method,Amount,Status\n';
+        monthOrders.forEach(order => {
+            csv += `${order.order_id},${order.customer_name},${order.date},${order.items},${order.payment_method},${order.total},${order.status}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `monthly-income-${month}.csv`;
+        a.click();
+
+        showToast('Monthly income report exported', 'success');
+    }
+
+    // ==================== SALES REPORTS ====================
+    function loadReports() {
+        salesReports = MOCK_REPORTS;
+        displayReports();
+    }
+
+    function displayReports() {
+        const container = document.getElementById('reportsList');
+        const search = document.getElementById('reportSearch').value.toLowerCase();
+        const typeFilter = document.getElementById('reportTypeFilter').value;
+        const sortBy = document.getElementById('reportSort').value;
+
+        let filtered = salesReports.filter(report => {
+            const matchesSearch = search === '' || report.name.toLowerCase().includes(search);
+            const matchesType = typeFilter === 'all' || report.type === typeFilter;
+            return matchesSearch && matchesType;
+        });
+
+        // Sort
+        filtered.sort((a, b) => {
+            switch(sortBy) {
+                case 'date-asc': return new Date(a.created_at) - new Date(b.created_at);
+                case 'date-desc': return new Date(b.created_at) - new Date(a.created_at);
+                case 'name-asc': return a.name.localeCompare(b.name);
+                case 'name-desc': return b.name.localeCompare(a.name);
+                default: return 0;
+            }
+        });
+
+        document.getElementById('reportsCount').textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📈</div><p>No sales reports found</p></div>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(report => `
+        <div class="report-card">
+          <div class="flex justify-between items-start mb-2">
+            <div style="flex: 1;">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-semibold" style="font-size: 1.125rem;">${report.name}</span>
+                <span class="badge badge-secondary">${report.type}</span>
+              </div>
+              <div class="text-muted" style="font-size: 0.875rem;">
+                ${formatDate(report.start_date)} - ${formatDate(report.end_date)} • Created ${formatDate(report.created_at)}
+              </div>
+              ${report.description ? `<p class="text-muted mt-1" style="font-size: 0.875rem;">${report.description}</p>` : ''}
+            </div>
+          </div>
+
+          <div class="grid grid-3 mb-2" style="background: var(--gray-50); padding: 1rem; border-radius: var(--border-radius);">
+            <div>
+              <div class="text-muted" style="font-size: 0.75rem;">Total Revenue</div>
+              <div class="font-semibold" style="color: var(--success-color); font-size: 1.125rem;">
+                ${formatCurrency(report.total_revenue)}
+              </div>
+            </div>
+            <div>
+              <div class="text-muted" style="font-size: 0.75rem;">Total Orders</div>
+              <div class="font-semibold" style="font-size: 1.125rem;">${report.total_orders}</div>
+            </div>
+            <div>
+              <div class="text-muted" style="font-size: 0.75rem;">Avg Order Value</div>
+              <div class="font-semibold" style="font-size: 1.125rem;">${formatCurrency(report.avg_order_value)}</div>
+            </div>
+          </div>
+
+          <div class="flex gap-1 justify-end">
+            <button class="btn btn-outline btn-sm" onclick="viewReport(${report.report_id})">
+              👁️ View Details
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="deleteReport(${report.report_id})">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function createReport() {
+        const form = document.getElementById('createReportForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const name = document.getElementById('reportName').value;
+        const type = document.getElementById('reportType').value;
+        const startDate = document.getElementById('reportStartDate').value;
+        const endDate = document.getElementById('reportEndDate').value;
+        const description = document.getElementById('reportDescription').value;
+
+        // Calculate report data
+        const reportOrders = orders.filter(o => o.date >= startDate && o.date <= endDate);
+        const totalRevenue = reportOrders.reduce((sum, o) => sum + o.total, 0);
+        const avgOrderValue = reportOrders.length > 0 ? totalRevenue / reportOrders.length : 0;
+
+        const newReport = {
+            report_id: Math.max(...salesReports.map(r => r.report_id), 0) + 1,
+            name,
+            type,
+            start_date: startDate,
+            end_date: endDate,
+            created_at: new Date().toISOString(),
+            description,
+            total_revenue: totalRevenue,
+            total_orders: reportOrders.length,
+            avg_order_value: avgOrderValue
+        };
+
+        salesReports.unshift(newReport);
+        displayReports();
+        closeModal('createReportModal');
+        form.reset();
+        showToast('Sales report created successfully', 'success');
+    }
+
+    function viewReport(reportId) {
+        currentReport = salesReports.find(r => r.report_id === reportId);
+        if (!currentReport) return;
+
+        document.getElementById('viewReportTitle').textContent = currentReport.name;
+
+        const reportOrders = orders.filter(o =>
+            o.date >= currentReport.start_date && o.date <= currentReport.end_date
+        );
+
+        document.getElementById('viewReportBody').innerHTML = `
+        <div class="summary-box mb-2">
+          <div class="summary-row">
+            <span>Report Type:</span>
+            <span class="font-semibold">${currentReport.type.toUpperCase()}</span>
+          </div>
+          <div class="summary-row">
+            <span>Period:</span>
+            <span class="font-semibold">${formatDate(currentReport.start_date)} - ${formatDate(currentReport.end_date)}</span>
+          </div>
+          <div class="summary-row">
+            <span>Created:</span>
+            <span class="font-semibold">${formatDateTime(currentReport.created_at)}</span>
+          </div>
+          ${currentReport.description ? `
+          <div class="summary-row">
+            <span>Description:</span>
+            <span>${currentReport.description}</span>
+          </div>
+          ` : ''}
+        </div>
+
+        <div class="grid grid-3 mb-2">
+          <div class="stat-card success">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value" style="font-size: 1.5rem;">${formatCurrency(currentReport.total_revenue)}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value" style="font-size: 1.5rem;">${currentReport.total_orders}</div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-label">Avg Order Value</div>
+            <div class="stat-value" style="font-size: 1.5rem;">${formatCurrency(currentReport.avg_order_value)}</div>
+          </div>
+        </div>
+
+        <h4 class="font-semibold mb-2">Order Details</h4>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th class="text-right">Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${reportOrders.map(order => `
+                <tr>
+                  <td class="font-mono">#${order.order_id}</td>
+                  <td>${order.customer_name}</td>
+                  <td>${formatDate(order.date)}</td>
+                  <td>${order.items} items</td>
+                  <td class="text-right font-semibold">${formatCurrency(order.total)}</td>
+                  <td><span class="badge ${getBadgeClass(order.status)}">${order.status}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+        openModal('viewReportModal');
+    }
+
+    function deleteReport(reportId) {
+        if (!confirm('Delete this sales report? This action cannot be undone.')) return;
+
+        salesReports = salesReports.filter(r => r.report_id !== reportId);
+        displayReports();
+        showToast('Sales report deleted', 'info');
+    }
+
+    function exportCurrentReport() {
+        if (!currentReport) return;
+
+        const reportOrders = orders.filter(o =>
+            o.date >= currentReport.start_date && o.date <= currentReport.end_date
+        );
+
+        let csv = `Report: ${currentReport.name}\n`;
+        csv += `Period: ${currentReport.start_date} to ${currentReport.end_date}\n`;
+        csv += `Total Revenue: ${currentReport.total_revenue}\n`;
+        csv += `Total Orders: ${currentReport.total_orders}\n\n`;
+        csv += 'Order ID,Customer,Date,Items,Payment Method,Amount,Status\n';
+
+        reportOrders.forEach(order => {
+            csv += `${order.order_id},${order.customer_name},${order.date},${order.items},${order.payment_method},${order.total},${order.status}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${currentReport.name.replace(/\s/g, '-')}.csv`;
+        a.click();
+
+        showToast('Report exported successfully', 'success');
+    }
+
+    // ==================== ANALYTICS ====================
+    function loadAnalytics() {
+        createCategoryRevenueChart();
+        createPaymentMethodsChart();
+        displayTopProducts();
+    }
+
+    function createCategoryRevenueChart() {
+        const ctx = document.getElementById('categoryRevenueChart');
+        if (!ctx) return;
+
+        // Mock category data
+        const categories = {
+            'CPU': 8500,
+            'GPU': 12000,
+            'RAM': 4500,
+            'Storage': 3200,
+            'Motherboard': 5100,
+            'PSU': 2300
+        };
+
+        if (categoryRevenueChart) categoryRevenueChart.destroy();
+
+        categoryRevenueChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(categories),
+                datasets: [{
+                    label: 'Revenue by Category',
+                    data: Object.values(categories),
+                    backgroundColor: '#0891b2'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createPaymentMethodsChart() {
+        const ctx = document.getElementById('paymentMethodsChart');
+        if (!ctx) return;
+
+        const paymentMethods = {};
+        orders.forEach(order => {
+            paymentMethods[order.payment_method] = (paymentMethods[order.payment_method] || 0) + 1;
+        });
+
+        if (paymentMethodsChart) paymentMethodsChart.destroy();
+
+        paymentMethodsChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(paymentMethods),
+                datasets: [{
+                    data: Object.values(paymentMethods),
+                    backgroundColor: [
+                        '#0891b2',
+                        '#10b981',
+                        '#f59e0b',
+                        '#ef4444',
+                        '#3b82f6'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    function displayTopProducts() {
+        const topProducts = [
+            { rank: 1, name: 'NVIDIA RTX 4090', units: 25, revenue: 39999.75 },
+            { rank: 2, name: 'AMD Ryzen 9 7950X', units: 42, revenue: 23099.58 },
+            { rank: 3, name: 'Corsair Vengeance DDR5 64GB', units: 38, revenue: 10639.62 },
+            { rank: 4, name: 'Samsung 990 Pro 2TB', units: 56, revenue: 10639.44 },
+            { rank: 5, name: 'ASUS ROG Strix X670E', units: 18, revenue: 7199.82 }
+        ];
+
+        const tbody = document.getElementById('topProductsBody');
+        tbody.innerHTML = topProducts.map(product => `
+        <tr>
+          <td class="font-semibold">#${product.rank}</td>
+          <td>${product.name}</td>
+          <td>${product.units}</td>
+          <td class="text-right font-semibold">${formatCurrency(product.revenue)}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    document.getElementById('dailyDate').addEventListener('change', generateDailySummary);
+    document.getElementById('dailyRangeStart').addEventListener('change', generateDailySummary);
+    document.getElementById('dailyRangeEnd').addEventListener('change', generateDailySummary);
+
+    document.getElementById('monthlyMonth').addEventListener('change', generateMonthlySummary);
+    document.getElementById('monthlyCompare').addEventListener('change', generateMonthlySummary);
+
+    document.getElementById('reportSearch').addEventListener('input', displayReports);
+    document.getElementById('reportTypeFilter').addEventListener('change', displayReports);
+    document.getElementById('reportSort').addEventListener('change', displayReports);
+
+    // Click outside modals to close
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal(modal.id);
+            }
+        });
+    });
+
+    // ==================== INITIALIZATION ====================
+    function init() {
+        loadOverview();
+    }
+
+    init();
+</script>
+</body>
+</html>
+
