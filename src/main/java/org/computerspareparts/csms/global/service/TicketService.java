@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class TicketService {
 
-    @Autowired//0
+    @Autowired//
     private TicketMessageRepository ticketMessageRepository;
 
     @Autowired
@@ -152,3 +152,4 @@ public class TicketService {
         return ticketToDto(saved);
     }
 }
+
