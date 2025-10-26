@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Store Manager Portal</title>
+    <link rel="stylesheet" href="/styles.css">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+</head>
+<body>
+<div class="min-h-screen bg-background p-6">
+    <div class="max-w-7xl mx-auto space-y-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <div>
+                <h1>Store Manager Portal</h1>
+                <p class="text-muted-foreground">
+                    Manage inventory, parts, and purchase requests
+                </p>
+            </div>
+            <div class="flex gap-2">
+                    <span class="badge badge-secondary flex items-center gap-1">
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                        <span id="total-parts-count">0</span> Parts
+                    </span>
+                <span id="low-stock-badge" class="badge badge-destructive flex items-center gap-1" style="display: none;">
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                        <span id="low-stock-count">0</span> Low Stock
+                    </span>
+                <span id="pending-requests-badge" class="badge badge-outline flex items-center gap-1" style="display: none;">
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2-8M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"/>
+                        </svg>
+                        <span id="pending-requests-count">0</span> Pending Orders
+                    </span>
+            </div>
+        </div>
+
+        <!-- Low Stock Alert -->
+        <div id="low-stock-alert" class="alert alert-destructive prominent-low-stock" style="display: none;">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+            <div>
+                <h4>Low Stock Alert</h4>
+                <div id="low-stock-message"></div>
+            </div>
+        </div>
+
+        <!-- Purchase Request Limit Message -->
+        <div id="purchase-request-limit-msg" style="color: red; text-align: center; font-weight: 500; display: none; margin-bottom: 1rem;"></div>
+
+
+        <!-- Main Content -->
+        <div class="tabs">
+            <div class="tabs-list">
+                <button class="tab-trigger active" data-tab="inventory">Inventory Management</button>
+                <button class="tab-trigger" data-tab="requests">Purchase Requests</button>
+            </div>
+
+            <!-- Inventory Tab -->
+            <div id="inventory-tab" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h2 class="card-title">Parts Inventory</h2>
+                            <div class="flex gap-2">
+                                <button id="new-purchase-request-btn" class="btn btn-outline">
+                                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2H21a1 1 0 01.96 1.27l-1.8 7A2 2 0 0118.24 15H7.42a2 2 0 01-1.98-1.73L4.22 4H3" />
+                                        <circle cx="9" cy="20" r="1" />
+                                        <circle cx="17" cy="20" r="1" />
+                                    </svg>
+                                    New Purchase Request
+                                </button>
+                                <button id="add-part-btn" class="btn btn-default">
+                                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Part
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative" style="position: relative;">
+                            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); pointer-events: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="8" stroke-width="2"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" stroke-width="2"/>
+                            </svg>
+                            <input
+                                    type="text"
+                                    id="search-input"
+                                    class="input"
+                                    style="padding-left: 2.2rem; height: 2.25rem;"
+                                    placeholder="Search parts by name, brand..."
+                            >
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Part ID</th>
+                                    <th>Name</th>
+                                    <th>Brand</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock Level</th>
+                                    <th>Reorder Level</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="parts-table-body">
+                                <!-- Each part row gets a data-part-name attribute for JS filtering -->
+                                <tr th:each="part : ${parts}" data-part-name="[[${part.name}]]">
+                                    <td th:text="${part.partId}"></td>
+                                    <td th:text="${part.name}"></td>
+                                    <td th:text="${part.brand}"></td>
+                                    <td th:text="${part.category}"></td>
+                                    <td th:text="${part.price}"></td>
+                                    <td th:text="${part.stockLevel}"></td>
+                                    <td th:text="${part.reorderLevel}"></td>
+                                    <td th:text="${part.status}"></td>
+                                    <td>
+                                        <!-- Actions (edit/delete/view) can go here -->
+                                    </td>
+                                </tr>
+                                <tr id="no-parts-row" style="display:none">
+                                    <td colspan="9">No parts found.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purchase Requests Tab -->
+            <div id="requests-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Purchase Requests</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="space-y-4" id="purchase-requests-list">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Part Modal -->
+<div id="part-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="part-modal-title">Add New Part</h3>
+            <button class="modal-close" onclick="closePartModal()">&times;</button>
+        </div>
+        <form id="part-form">
+            <div class="form-group">
+                <label for="part-name">Name</label>
+                <input type="text" id="part-name" class="input" required>
+            </div>
+            <div class="form-group">
+                <label for="part-brand">Brand</label>
+                <input type="text" id="part-brand" class="input" required>
+            </div>
+            <div class="form-group">
+                <label for="part-category">Category</label>
+                <select id="part-category" class="input" required>
+                    <option value="">Select category</option>
+                    <option value="CPU">CPU</option>
+                    <option value="GPU">GPU</option>
+                    <option value="RAM">RAM</option>
+                    <option value="Storage">Storage</option>
+                    <option value="Motherboard">Motherboard</option>
+                    <option value="PSU">PSU</option>
+                    <option value="Cooling">Cooling</option>
+                    <option value="Case">Case</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="part-price">Price ($)</label>
+                <input type="number" id="part-price" class="input" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="part-stock">Stock Level</label>
+                <input type="number" id="part-stock" class="input" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="part-reorder">Reorder Level</label>
+                <input type="number" id="part-reorder" class="input" min="0" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closePartModal()">Cancel</button>
+                <button type="submit" class="btn btn-default">Save Part</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Purchase Request Modal -->
+<div id="purchase-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Create Purchase Request</h3>
+            <button class="modal-close" onclick="closePurchaseModal()">&times;</button>
+        </div>
+        <form id="purchase-form">
+            <div class="form-group">
+                <label for="purchase-part">Part</label>
+                <select id="purchase-part" class="input" required>
+                    <option value="">Select part</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="purchase-quantity">Quantity</label>
+                <input type="number" id="purchase-quantity" class="input" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="purchase-supplier">Supplier</label>
+                <select id="purchase-supplier" class="input" required>
+                    <option value="">Select supplier</option>
+                    <!-- Populated by JS -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Estimated Cost: <span id="estimated-cost">$0.00</span></label>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closePurchaseModal()">Cancel</button>
+                <button type="submit" class="btn btn-default">Create Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirm-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirm Action</h3>
+            <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirm-message"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button>
+            <button type="button" id="confirm-action-btn" class="btn btn-destructive">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<script src="/script.js"></script>
+<script>
+    // On page load, check authentication by calling a protected API endpoint
+    window.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/auth-check', { credentials: 'include' })
+            .then(response => {
+                if (response.status === 401 || response.status === 403) {
+                    window.location.href = '/login';
+                }
+            })
+            .catch(() => {
+                window.location.href = '/login';
+            });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchInput = document.getElementById('search-input');
+        var tableBody = document.getElementById('parts-table-body');
+        var noPartsRow = document.getElementById('no-parts-row');
+        searchInput.addEventListener('input', function() {
+            var filter = searchInput.value.trim().toLowerCase();
+            var rows = tableBody.getElementsByTagName('tr');
+            var anyVisible = false;
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                // Skip the 'No parts found' row
+                if (row.id === 'no-parts-row') continue;
+                var nameCell = row.cells[1]; // 2nd column is Name
+                if (nameCell) {
+                    var partName = nameCell.textContent.trim().toLowerCase();
+                    if (!filter || partName.startsWith(filter)) {
+                        row.style.display = '';
+                        anyVisible = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            }
+            if (noPartsRow) {
+                noPartsRow.style.display = anyVisible ? 'none' : '';
+            }
+        });
+    });
+</script>
+<div th:if="${param.error}">
+    <p style="color:red;"></p>
+</div>
+</body>
+</html>
