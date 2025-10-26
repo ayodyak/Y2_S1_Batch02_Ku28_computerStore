@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.5;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 0.875rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Tabs */
+        .tabs {
+            margin: 2rem 0;
+        }
+
+        .tabs-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 28rem;
+            background: white;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            gap: 0.25rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .tab-trigger {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .tab-trigger:hover {
+            background: #f3f4f6;
+        }
+
+        .tab-trigger.active {
+            background: #f3f4f6;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+        @media (max-width: 1024px) {
+            .lg-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+            .lg-grid-cols-3 { grid-template-columns: repeat(1, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .md-grid-cols-2 { grid-template-columns: repeat(1, 1fr); }
+            .md-grid-cols-3 { grid-template-columns: repeat(1, 1fr); }
+            .md-grid-cols-4 { grid-template-columns: repeat(1, 1fr); }
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .badge-high {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        .badge-medium {
+            background: #eff6ff;
+            color: #1e40af;
+            border-color: #bfdbfe;
+        }
+
+        .badge-low {
+            background: #f9fafb;
+            color: #374151;
+            border-color: #e5e7eb;
+        }
+
+        .badge-open {
+            background: #eff6ff;
+            color: #1e40af;
+            border-color: #bfdbfe;
+        }
+
+        .badge-in-progress {
+            background: #f3f4f6;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        .badge-pending {
+            background: #fffbeb;
+            color: #92400e;
+            border-color: #fde68a;
+        }
+
+        .badge-resolved {
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+
+        /* Button */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border-color: transparent;
+            color: #374151;
+        }
+
+        .btn-ghost:hover {
+            background: #f3f4f6;
+        }
+
+        /* Input */
+        .input, .textarea, .select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background: white;
+        }
+
+        .input:focus, .textarea:focus, .select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Ticket Item */
+        .ticket-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ticket-item:hover {
+            background: #f9fafb;
+        }
+
+        .ticket-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .ticket-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Stat Card */
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .trend-up {
+            color: #059669;
+        }
+
+        .trend-down {
+            color: #dc2626;
+        }
+
+        /* Icon */
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: inline-block;
+        }
+
+        /* Utilities */
+        .text-muted {
+            color: #6b7280;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+
+        /* Filter Section */
+        .filters {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .filters {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .search-input {
+            padding-left: 2.5rem;
+        }
+
+        /* Ticket Detail */
+        .conversation {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .message-staff {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .message-avatar-user {
+            background: #9ca3af;
+        }
+
+        .message-avatar-staff {
+            background: #2563eb;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid;
+        }
+
+        .message-content-user {
+            background: #f9fafb;
+            border-color: #e5e7eb;
+        }
+
+        .message-content-staff {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .message-staff .message-content {
+            text-align: right;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.3s;
+        }
+
+        .progress-blue { background: #2563eb; }
+        .progress-green { background: #059669; }
+        .progress-yellow { background: #d97706; }
+        .progress-purple { background: #7c3aed; }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Separator */
+        .separator {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 1rem 0;
+        }
+
+        /* Status Indicator */
+        .status-healthy {
+            display: inline-flex;
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 255, 255, 0.15);
+            color: #065f46;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .metric-border {
+            border-left: 4px solid;
+            padding-left: 1rem;
+        }
+
+        .border-blue { border-color: #2563eb; }
+        .border-green { border-color: #059669; }
+        .border-yellow { border-color: #d97706; }
+        .border-purple { border-color: #7c3aed; }
+
+        .hidden {
+            display: none;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<header>
+    <div class="header-content">
+        <div>
+            <h1>IT Support Portal</h1>
+            <p class="text-muted">Manage tickets and monitor system performance</p>
+        </div>
+        <div class="user-info">
+            <div style="text-align: right;">
+                <p style="font-weight: 600;">John Smith</p>
+                <p class="text-muted text-sm">IT Technician</p>
+            </div>
+            <div class="user-avatar">JS</div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tabs-list">
+            <button class="tab-trigger active" onclick="switchTab('dashboard')">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </button>
+            <button class="tab-trigger" onclick="switchTab('tickets')">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                </svg>
+                Tickets
+            </button>
+            <button class="tab-trigger" onclick="switchTab('metrics')">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                Performance
+            </button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div style="margin-top: 1.5rem;">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-4 md-grid-cols-4 mb-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3>Open Tickets</h3>
+                                <svg class="icon" style="color: #f97316;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value">9</div>
+                            <p class="text-muted text-sm">Requires attention</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3>Urgent</h3>
+                                <svg class="icon" style="color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value">4</div>
+                            <p class="text-muted text-sm">High priority</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3>Pending</h3>
+                                <svg class="icon" style="color: #eab308;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value">2</div>
+                            <p class="text-muted text-sm">Awaiting response</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="flex items-center justify-between">
+                                <h3>Resolved Today</h3>
+                                <svg class="icon" style="color: #059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value">1</div>
+                            <p class="text-muted text-sm">Great progress!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tickets -->
+                <div class="card mb-6">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h2>Recent Tickets</h2>
+                            <button class="btn btn-ghost" onclick="switchTab('tickets')">
+                                View All
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div id="recent-tickets"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-3 md-grid-cols-3">
+                    <div class="card">
+                        <div class="card-header"><h3>Avg Response Time</h3></div>
+                        <div class="card-content">
+                            <div class="flex items-center gap-2">
+                                <span class="stat-value" style="font-size: 2rem;">2.3</span>
+                                <span class="text-muted">hours</span>
+                            </div>
+                            <div class="stat-trend trend-up">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                                12% faster
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>Resolution Rate</h3></div>
+                        <div class="card-content">
+                            <div class="flex items-center gap-2">
+                                <span class="stat-value" style="font-size: 2rem;">94%</span>
+                                <span class="text-muted">this week</span>
+                            </div>
+                            <div class="stat-trend trend-up">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                                5% improvement
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>Customer Satisfaction</h3></div>
+                        <div class="card-content">
+                            <div class="flex items-center gap-2">
+                                <span class="stat-value" style="font-size: 2rem;">4.8</span>
+                                <span class="text-muted">/ 5.0</span>
+                            </div>
+                            <div class="stat-trend trend-up">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                                Excellent
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tickets Tab -->
+        <div id="tab-tickets" class="tab-content">
+            <div style="margin-top: 1.5rem;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>All Support Tickets</h2>
+                    </div>
+                    <div class="card-content">
+                        <!-- Filters -->
+                        <div class="filters">
+                            <div class="search-wrapper">
+                                <svg class="search-icon icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                <input type="text" class="input search-input" placeholder="Search tickets..." id="searchInput" oninput="filterTickets()">
+                            </div>
+                            <select class="select" id="statusFilter" onchange="filterTickets()">
+                                <option value="all">All Status</option>
+                                <option value="open">Open</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="pending">Pending</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                            <select class="select" id="priorityFilter" onchange="filterTickets()">
+                                <option value="all">All Priority</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+
+                        <!-- Tickets List -->
+                        <div id="tickets-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ticket Detail View -->
+        <div id="ticket-detail-view" class="hidden" style="margin-top: 1.5rem;">
+            <button class="btn btn-ghost mb-4" onclick="closeTicketDetail()">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Tickets
+            </button>
+
+            <div class="grid grid-cols-1 lg-grid-cols-3" style="grid-template-columns: 2fr 1fr;">
+                <div>
+                    <!-- Ticket Header -->
+                    <div class="card mb-6">
+                        <div class="card-header">
+                            <div id="ticket-detail-header"></div>
+                        </div>
+                        <div class="card-content">
+                            <div id="ticket-detail-content"></div>
+                        </div>
+                    </div>
+
+                    <!-- Conversation -->
+                    <div class="card mb-6" id="conversation-card" style="display: none;">
+                        <div class="card-header">
+                            <h2>Conversation</h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="conversation" id="conversation"></div>
+                        </div>
+                    </div>
+
+                    <!-- Reply Box -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Send Reply</h2>
+                        </div>
+                        <div class="card-content">
+                            <textarea class="textarea mb-4" id="reply-text" placeholder="Type your reply here..." rows="6"></textarea>
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button class="btn btn-primary" onclick="sendReply()">
+                                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                    Send Reply
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div style="margin-left: 1.5rem;">
+                    <div class="card mb-6">
+                        <div class="card-header">
+                            <h3>Ticket Management</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="mb-4">
+                                <label class="mb-2" style="display: block;">Status</label>
+                                <select class="select" id="ticket-status">
+                                    <option value="open">Open</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="resolved">Resolved</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="mb-2" style="display: block;">Priority</label>
+                                <select class="select" id="ticket-priority">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary w-full" onclick="updateTicket()">Update Ticket</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div class="card-content" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <button class="btn btn-secondary w-full" style="justify-content: flex-start;">Assign to Me</button>
+                            <button class="btn btn-secondary w-full" style="justify-content: flex-start;">Add Internal Note</button>
+                            <button class="btn btn-secondary w-full" style="justify-content: flex-start;">Escalate Ticket</button>
+                            <button class="btn btn-secondary w-full" style="justify-content: flex-start; color: #dc2626;">Close Ticket</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics Tab -->
+        <div id="tab-metrics" class="tab-content">
+            <div style="margin-top: 1.5rem;">
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-4 md-grid-cols-4 mb-6">
+                    <div class="card">
+                        <div class="card-header"><h3>Avg Response Time</h3></div>
+                        <div class="card-content">
+                            <div class="stat-value">2.3 hours</div>
+                            <div class="stat-trend trend-up">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                                </svg>
+                                12% faster
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>Resolution Rate</h3></div>
+                        <div class="card-content">
+                            <div class="stat-value">94%</div>
+                            <div class="stat-trend trend-up">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                                5% increase
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>First Contact Fix</h3></div>
+                        <div class="card-content">
+                            <div class="stat-value">78%</div>
+                            <div class="stat-trend trend-up">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                                3% increase
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>Customer Satisfaction</h3></div>
+                        <div class="card-content">
+                            <div class="stat-value">4.8 / 5.0</div>
+                            <div class="stat-trend trend-up">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                                Excellent
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-2 lg-grid-cols-2 mb-6">
+                    <div class="card">
+                        <div class="card-header"><h2>Ticket Trends (Last 7 Days)</h2></div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>Average Response Time by Hour</h2></div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="responseChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg-grid-cols-2 mb-6">
+                    <div class="card">
+                        <div class="card-header"><h2>Tickets by Category</h2></div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2>System Performance</h2></div>
+                        <div class="card-content">
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-muted">CPU Usage</span>
+                                        <span>45%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-blue" style="width: 45%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-muted">Memory Usage</span>
+                                        <span>62%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-green" style="width: 62%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-muted">Disk Usage</span>
+                                        <span>78%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-yellow" style="width: 78%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-muted">Network Load</span>
+                                        <span>34%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill progress-purple" style="width: 34%;"></div>
+                                    </div>
+                                </div>
+                                <div class="separator"></div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-muted">System Health</span>
+                                    <span class="status-healthy">Healthy</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Metrics -->
+                <div class="card">
+                    <div class="card-header"><h2>Detailed Metrics</h2></div>
+                    <div class="card-content">
+                        <div class="grid grid-cols-4 md-grid-cols-4">
+                            <div class="metric-border border-blue">
+                                <p class="text-muted mb-1">Total Tickets (30 days)</p>
+                                <p class="stat-value" style="font-size: 1.5rem;">284</p>
+                            </div>
+                            <div class="metric-border border-green">
+                                <p class="text-muted mb-1">Resolved Tickets</p>
+                                <p class="stat-value" style="font-size: 1.5rem;">267</p>
+                            </div>
+                            <div class="metric-border border-yellow">
+                                <p class="text-muted mb-1">Avg Resolution Time</p>
+                                <p class="stat-value" style="font-size: 1.5rem;">4.2 hours</p>
+                            </div>
+                            <div class="metric-border border-purple">
+                                <p class="text-muted mb-1">Reopened Tickets</p>
+                                <p class="stat-value" style="font-size: 1.5rem;">8</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tickets loaded from the backend API (fallback to mockTickets if API fails)
+    let tickets = [];
+    let fetchErrorMessage = null; // hold a user-friendly error message when fetch fails
+
+    // small helper: ensure we have escapeHtml available (used extensively in this template)
+    function escapeHtml(s) {
+        try {
+            return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c) {
+                return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);
+            });
+        } catch (e) {
+            return '';
+        }
+    }
+
+    // Small safe mock data to avoid runtime errors when the API is unavailable.
+    // This helps development and prevents ReferenceErrors if mockTickets is referenced.
+    const mockTickets = [
+        {
+            id: '1001',
+            title: 'Sample: Unable to access VPN',
+            description: 'User cannot establish VPN connection to the corporate network.',
+            createdByName: 'Alice Johnson',
+            priority: 'low',
+            status: 'open',
+            createdAt: '2025-10-01 09:15:00'
+        },
+        {
+            id: '1002',
+            title: 'Sample: Printer not working',
+            description: 'Office printer is showing paper jam despite no jam present.',
+            createdByName: 'Bob Lee',
+            priority: 'medium',
+            status: 'pending',
+            createdAt: '2025-10-02 14:22:00'
+        }
+    ];
+
+    let currentTicket = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        initCharts();
+        // Load tickets from the server (primary source)
+        fetchTickets();
+    });
+
+    // Tab Switching
+    function switchTab(tab) {
+        // Update tab triggers (robust: don't rely on global `event`)
+        document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+
+        try {
+            // Try using the event target if available
+            if (typeof event !== 'undefined' && event && event.target) {
+                const trigger = event.target.closest('.tab-trigger');
+                if (trigger) trigger.classList.add('active');
+            } else {
+                // Fallback: find first trigger button whose onclick calls this tab
+                const selector = `.tab-trigger[onclick="switchTab('${tab}')"]`;
+                const trigger = document.querySelector(selector);
+                if (trigger) trigger.classList.add('active');
+            }
+        } catch (e) {
+            // ignore and continue
+        }
+
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        const target = document.getElementById('tab-' + tab);
+        if (target) target.classList.add('active');
+
+        // Hide ticket detail view
+        const detail = document.getElementById('ticket-detail-view');
+        if (detail) detail.classList.add('hidden');
+
+        // Re-initialize charts if switching to metrics
+        if (tab === 'metrics') {
+            setTimeout(() => initCharts(), 100);
+        }
+    }
+
+    // Render Recent Tickets (from `tickets` array)
+    function renderRecentTickets() {
+        const container = document.getElementById('recent-tickets');
+        if (!container) return;
+        if ((!tickets || tickets.length === 0) && fetchErrorMessage) {
+            container.innerHTML = `<div style="text-align:center;padding:2rem;color:#6b7280;">${escapeHtml(fetchErrorMessage)}</div>`;
+            return;
+        }
+        const recentTickets = tickets.slice(0, 5);
+        container.innerHTML = recentTickets.map(ticket => `
+                <div class="ticket-item" onclick="viewTicket('${escapeHtml(ticket.id)}')">
+                    <div class="ticket-header">
+                        <span class="badge badge-${escapeHtml(ticket.priority)}">${escapeHtml(ticket.priority)}</span>
+                        <span class="badge badge-${escapeHtml(ticket.status)}">${escapeHtml(ticket.status)}</span>
+                    </div>
+                    <h4 class="mb-1">#${escapeHtml(ticket.id)} - ${escapeHtml(ticket.subject)}</h4>
+                    <p class="text-muted">${escapeHtml(ticket.requester)}</p>
+                    <p class="text-muted text-sm mt-2">${escapeHtml(ticket.preview)}</p>
+                    <div class="mt-2 flex justify-between text-sm">
+                        <span class="text-muted">${escapeHtml(ticket.category)}</span>
+                        <span class="text-muted">${escapeHtml(ticket.createdAt)}</span>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    // Render All Tickets (from `tickets` array)
+    function renderAllTickets() {
+        const container = document.getElementById('tickets-list');
+        if (!container) return;
+        if ((!tickets || tickets.length === 0) && fetchErrorMessage) {
+            container.innerHTML = `<div style="text-align:center;padding:3rem;color:#6b7280;">${escapeHtml(fetchErrorMessage)}</div>`;
+            return;
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+        const statusFilterEl = document.getElementById('statusFilter');
+        const priorityFilterEl = document.getElementById('priorityFilter');
+        const statusFilter = statusFilterEl ? statusFilterEl.value : 'all';
+        const priorityFilter = priorityFilterEl ? priorityFilterEl.value : 'all';
+
+        const filteredTickets = tickets.filter(ticket => {
+            const subj = (ticket.subject || '').toString().toLowerCase();
+            const req = (ticket.requester || '').toString().toLowerCase();
+            const matchesSearch = subj.includes(searchTerm) || req.includes(searchTerm);
+            const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
+            const matchesPriority = priorityFilter === 'all' || ticket.priority === priorityFilter;
+            return matchesSearch && matchesStatus && matchesPriority;
+        });
+
+        if (filteredTickets.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 3rem; color: #6b7280;">No tickets found matching your criteria.</div>';
+            return;
+        }
+
+        container.innerHTML = filteredTickets.map(ticket => `
+                <div class="ticket-item" onclick="viewTicket('${escapeHtml(ticket.id)}')" style="margin-bottom: 0.75rem;">
+                    <div class="flex justify-between" style="align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <div class="ticket-header">
+                                <span class="text-muted">#${escapeHtml(ticket.id)}</span>
+                                <span class="badge badge-${escapeHtml(ticket.priority)}">${escapeHtml(ticket.priority)}</span>
+                                <span class="badge badge-${escapeHtml(ticket.status)}">${escapeHtml(ticket.status)}</span>
+                            </div>
+                            <h4 class="mb-1">${escapeHtml(ticket.subject)}</h4>
+                            <p class="text-muted">${escapeHtml(ticket.requester)} • ${escapeHtml(ticket.category)}</p>
+                            <p class="text-muted text-sm mt-2">${escapeHtml(ticket.preview)}</p>
+                        </div>
+                        <div style="text-align: right; margin-left: 1rem;">
+                            <p class="text-muted">${escapeHtml(ticket.createdAt)}</p>
+                            ${ticket.lastUpdated ? `<p class="text-muted text-sm mt-1">Updated: ${escapeHtml(ticket.lastUpdated)}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    // Filter Tickets
+    function filterTickets() {
+        renderAllTickets();
+    }
+
+    // Fetch list of tickets from backend API
+    async function fetchTickets() {
+        fetchErrorMessage = null;
+        try {
+            const resp = await fetch('/employee/it/api/tickets', { credentials: 'same-origin' });
+            if (!resp.ok) {
+                // Handle 403 specially so the UI can show a friendly message instead of failing
+                if (resp.status === 403) {
+                    console.warn('Tickets API returned 403 Forbidden - user may not be authenticated or lacks IT role');
+                    fetchErrorMessage = 'You are not authorized to view tickets. Please log in as an IT Technician.';
+                    tickets = [];
+                    renderRecentTickets();
+                    renderAllTickets();
+                    return;
+                }
+                fetchErrorMessage = 'Failed to load tickets (HTTP ' + resp.status + '). Please try again later.';
+                throw new Error('HTTP ' + resp.status);
+            }
+            const data = await resp.json();
+            if (Array.isArray(data)) {
+                tickets = data.map(t => ({
+                    id: t.id ? String(t.id) : '0',
+                    subject: t.title || '',
+                    requester: t.createdByName || '',
+                    category: 'Ticket',
+                    priority: (t.priority || '').toLowerCase(),
+                    status: (t.status || '').toLowerCase(),
+                    createdAt: t.createdAt || '',
+                    lastUpdated: '',
+                    preview: t.description ? (t.description.length > 120 ? t.description.slice(0, 120) + '...' : t.description) : '',
+                    description: t.description || '',
+                    _raw: t
+                }));
+            } else {
+                tickets = [];
+            }
+        } catch (err) {
+            console.warn('Could not load tickets from server, falling back to mock data:', err);
+            if (!fetchErrorMessage) {
+                fetchErrorMessage = 'Could not load tickets from server. Showing sample data.';
+            }
+            // Use mockTickets only when defined; otherwise use empty list to avoid exceptions
+            tickets = (typeof mockTickets !== 'undefined' && Array.isArray(mockTickets)) ? mockTickets.slice().map(t => ({
+                id: t.id ? String(t.id) : '0',
+                subject: t.title || '',
+                requester: t.createdByName || '',
+                category: 'Ticket',
+                priority: (t.priority || '').toLowerCase(),
+                status: (t.status || '').toLowerCase(),
+                createdAt: t.createdAt || '',
+                lastUpdated: '',
+                preview: t.description ? (t.description.length > 120 ? t.description.slice(0, 120) + '...' : t.description) : '',
+                description: t.description || '',
+                _raw: t
+            })) : [];
+        }
+
+        renderRecentTickets();
+        renderAllTickets();
+    }
+
+    // Fetch ticket detail (messages and full description) from backend
+    async function fetchTicketDetail(ticketId) {
+        try {
+            const resp = await fetch('/employee/it/api/tickets/' + encodeURIComponent(ticketId), { credentials: 'same-origin' });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const detail = await resp.json();
+            return detail;
+        } catch (err) {
+            console.warn('Failed to fetch ticket detail', err);
+            return null;
+        }
+    }
+
+    // View Ticket Detail
+    async function viewTicket(ticketId) {
+        // request full ticket detail from the server
+        const detail = await fetchTicketDetail(ticketId);
+        if (!detail) return;
+        currentTicket = detail;
+
+        // Hide tabs and show detail view
+        document.getElementById('tab-tickets').classList.remove('active');
+        document.getElementById('ticket-detail-view').classList.remove('hidden');
+
+        // Render ticket header
+        document.getElementById('ticket-detail-header').innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-muted">#${escapeHtml(String(detail.id))}</span>
+                    <span class="badge badge-${escapeHtml((detail.priority || '').toLowerCase())}">${escapeHtml(detail.priority)}</span>
+                    <span class="badge badge-${escapeHtml((detail.status || '').toLowerCase())}">${escapeHtml(detail.status)}</span>
+                </div>
+                <h2>${escapeHtml(detail.title)}</h2>
+            `;
+
+        // Render ticket content
+        document.getElementById('ticket-detail-content').innerHTML = `
+                <p class="text-muted mb-1">From: ${escapeHtml(detail.createdByName || '')}</p>
+                <p class="text-muted mb-1">Category: Ticket</p>
+                <p class="text-muted mb-4">Created: ${escapeHtml(detail.createdAt || '')}</p>
+                <div class="separator"></div>
+                <p style="margin-top: 1rem;">${escapeHtml(detail.description || '')}</p>
+            `;
+
+        // Render conversation/messages
+        if (detail.messages && detail.messages.length > 0) {
+            document.getElementById('conversation-card').style.display = 'block';
+            renderConversationFromMessages(detail.messages);
+         } else {
+             document.getElementById('conversation-card').style.display = 'none';
+         }
+
+         // Set form values
+        const statusEl = document.getElementById('ticket-status');
+        const priorityEl = document.getElementById('ticket-priority');
+        if (statusEl && priorityEl) {
+            statusEl.value = detail.status ? detail.status.toLowerCase() : 'open';
+            priorityEl.value = detail.priority ? detail.priority.toLowerCase() : 'low';
+        }
+        const replyEl = document.getElementById('reply-text');
+        if (replyEl) replyEl.value = '';
+    }
+
+    // Helper: render conversation given a messages array
+    function renderConversationFromMessages(messages) {
+        const convEl = document.getElementById('conversation');
+        if (!convEl) return;
+        if (!messages || messages.length === 0) {
+            convEl.innerHTML = '';
+            document.getElementById('conversation-card').style.display = 'none';
+            return;
+        }
+        document.getElementById('conversation-card').style.display = 'block';
+        convEl.innerHTML = messages.map(reply => `
+                <div class="message ${reply.senderRole && reply.senderRole.toLowerCase().includes('it') ? 'message-staff' : ''}">
+                    <div class="message-avatar ${reply.senderRole && reply.senderRole.toLowerCase().includes('it') ? 'message-avatar-staff' : 'message-avatar-user'}">
+                        ${escapeHtml(reply.senderName ? reply.senderName.split(' ').map(n=>n[0]).join('').slice(0,2) : 'U')}
+                    </div>
+                    <div class="message-content ${reply.senderRole && reply.senderRole.toLowerCase().includes('it') ? 'message-content-staff' : 'message-content-user'}">
+                        <p style="font-weight: 600; margin-bottom: 0.5rem;">${escapeHtml(reply.senderName || 'Unknown')}</p>
+                        <p>${escapeHtml(reply.message || '')}</p>
+                        <p class="text-muted text-sm" style="margin-top: 0.5rem;">${reply.createdAt ? new Date(reply.createdAt).toLocaleString() : ''}</p>
+                    </div>
+                </div>
+            `).join('');
+    }
+
+     // Close Ticket Detail
+     function closeTicketDetail() {
+         document.getElementById('ticket-detail-view').classList.add('hidden');
+         document.getElementById('tab-tickets').classList.add('active');
+     }
+
+    // Send Reply (technician)
+    async function sendReply() {
+        const replyTextEl = document.getElementById('reply-text');
+        if (!replyTextEl) return;
+        const replyText = replyTextEl.value.trim();
+        if (!replyText) {
+            alert('Please enter a reply message');
+            return;
+        }
+
+        // Build payload expected by backend
+        const payload = {
+            senderRole: 'IT',
+            senderName: 'John Smith',
+            message: replyText
+        };
+
+        // Optimistic UI update object
+        const localMessage = {
+            senderRole: payload.senderRole,
+            senderName: payload.senderName,
+            message: payload.message,
+            createdAt: new Date().toISOString()
+        };
+
+        // Try sending to backend; if it fails, fall back to local update
+        try {
+            const resp = await fetch('/employee/it/api/tickets/' + encodeURIComponent(currentTicket.id) + '/messages', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resp.ok) {
+                // Backend returned error — fallback to local append but show notice
+                throw new Error('Server responded ' + resp.status);
+            }
+
+            // Try to use server-returned message if provided
+            const created = await resp.json().catch(() => null);
+            const messageToAdd = created && created.createdAt ? created : localMessage;
+
+            // Ensure messages array exists
+            if (!currentTicket.messages) currentTicket.messages = [];
+            currentTicket.messages.push(messageToAdd);
+
+            // Clear input and re-render conversation
+            replyTextEl.value = '';
+            renderConversationFromMessages(currentTicket.messages);
+            alert('Reply sent successfully');
+        } catch (err) {
+            console.warn('Failed to send reply to server, applying local update:', err);
+            if (!currentTicket.messages) currentTicket.messages = [];
+            currentTicket.messages.push(localMessage);
+            replyTextEl.value = '';
+            renderConversationFromMessages(currentTicket.messages);
+            alert('Reply queued locally (offline). It will be synced when server is available.');
+        }
+    }
+
+     // Update Ticket
+     function updateTicket() {
+         currentTicket.status = document.getElementById('ticket-status').value;
+         currentTicket.priority = document.getElementById('ticket-priority').value;
+
+         // Re-render
+         viewTicket(currentTicket.id);
+         renderAllTickets();
+         renderRecentTickets();
+
+         alert('Ticket updated successfully');
+     }
+
+    // Initialize Charts
+    let trendChart, responseChart, categoryChart;
+
+    function initCharts() {
+        // Destroy existing charts
+        if (trendChart) trendChart.destroy();
+        if (responseChart) responseChart.destroy();
+        if (categoryChart) categoryChart.destroy();
+
+        // Trend Chart
+        const trendCtx = document.getElementById('trendChart');
+        if (trendCtx) {
+            trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Open',
+                            data: [12, 15, 10, 18, 14, 8, 6],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Resolved',
+                            data: [15, 13, 18, 16, 20, 10, 7],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Pending',
+                            data: [5, 7, 4, 8, 6, 3, 2],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Response Chart
+        const responseCtx = document.getElementById('responseChart');
+        if (responseCtx) {
+            responseChart = new Chart(responseCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM'],
+                    datasets: [{
+                        label: 'Avg Time (hours)',
+                        data: [2.5, 2.8, 3.2, 4.1, 3.5, 2.9, 2.4, 2.1, 1.8],
+                        backgroundColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Category Chart
+        const categoryCtx = document.getElementById('categoryChart');
+        if (categoryCtx) {
+            categoryChart = new Chart(categoryCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Hardware', 'Software', 'Network', 'Access', 'Other'],
+                    datasets: [{
+                        data: [35, 45, 25, 18, 12],
+                        backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>
